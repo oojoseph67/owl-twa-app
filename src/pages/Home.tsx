@@ -6,6 +6,7 @@ import spin from "../assets/palette.svg";
 import leaf from "../assets/leaf.png";
 import bot from "../assets/chatbot.png";
 import star from "../assets/glossy star.png";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
@@ -38,15 +39,21 @@ const Home = () => {
         <p className="font-[500] opacity-60">Mini games</p>
 
         <div className="mt-[5px] flex justify-between gap-[10px] ">
-          <div className="w-[33%] h-[114px] pt-[10px] pb-[10px] rounded-[16px] border border-red flex flex-col justify-between items-center">
+          <Link
+            to="/headortail"
+            className="w-[33%] h-[114px] pt-[10px] pb-[10px] rounded-[16px] border border-red flex flex-col justify-between items-center"
+          >
             <img src={bird} alt="bird" />
             <p className="text-[12px] font-[500] text-center">Head or Tail</p>
             <button className="bg-red rounded-[4px] px-[10px] text-[10px] font-[500]">
               play
             </button>
-          </div>
+          </Link>
 
-          <div className="w-[33%] h-[114px] pt-[10px] pb-[10px] rounded-[16px] border border-red flex flex-col justify-between items-center">
+          <Link
+            to="/rock-paper-scissors"
+            className="w-[33%] h-[114px] pt-[10px] pb-[10px] rounded-[16px] border border-red flex flex-col justify-between items-center"
+          >
             <img src={hand} alt="hand" />
             <p className="text-[12px] font-[500] text-center leading-[1.1]">
               Rock paper <br /> scissor
@@ -54,7 +61,7 @@ const Home = () => {
             <button className="bg-red rounded-[4px] px-[10px] text-[10px] font-[500]">
               play
             </button>
-          </div>
+          </Link>
 
           <div className="w-[33%] h-[114px] pt-[10px] pb-[10px] rounded-[16px] border border-red flex flex-col justify-between items-center">
             <img src={spin} alt="spin" />
