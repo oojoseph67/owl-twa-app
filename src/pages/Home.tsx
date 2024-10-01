@@ -30,9 +30,12 @@ const Home = () => {
         <p className="font-[500] opacity-60 text-center">
           Ready to earn more $REDBIRD?
         </p>
-        <button className="bg-red w-full h-[43px] rounded-[8px] flex items-center gap-[10px] justify-center">
+        <Link
+          to="/tasks"
+          className="bg-red w-full h-[43px] rounded-[8px] flex items-center gap-[10px] justify-center"
+        >
           <p className="font-[600]">Check Redable Tasks</p>
-        </button>
+        </Link>
       </div>
 
       <div className="mt-[20px]">

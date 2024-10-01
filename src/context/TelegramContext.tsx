@@ -33,7 +33,12 @@ export const TelegramProvider: React.FC<{ children: React.ReactNode }> = ({
       window.Telegram.WebApp.expand();
 
       if (window.Telegram.WebApp.initDataUnsafe?.user) {
+        let startParam =
+          window.Telegram.WebApp.initDataUnsafe.start_param || "None";
+        alert(`Hi, You were invited by ${startParam}`);
+
         const telegramUser = window.Telegram.WebApp.initDataUnsafe.user;
+
         setFirstName(telegramUser.first_name || "Mate");
         setUserTelegramId(telegramUser.id.toString());
 
