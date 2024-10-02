@@ -1,4 +1,42 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { BACKEND_URL } from "../../utils/config";
+import axios from "axios";
+
+export function useRegisterUserMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      username,
+      userTelegramId,
+      refTelegramId,
+      profilePicture,
+    }: {
+      username: string;
+      userTelegramId: number;
+      refTelegramId?: number;
+      profilePicture: string;
+    }) => {
+      try {
+        const response = await axios.post(`${BACKEND_URL}/auth/register`, {
+          telegramId: userTelegramId,
+          username,
+          referralTelegramId: refTelegramId,
+          profilePicture,
+        });
+        return response.data;
+      } catch (error) {
+        // console.log(error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["user"],
+      });
+    },
+  });
+}
 
 // syntax
 export function useMutationExample() {

@@ -4,28 +4,36 @@ import { TbCopyCheckFilled as Copied } from "react-icons/tb";
 import inviteIcon from "../assets/invte.svg";
 import { useEffect, useState } from "react";
 import { useTelegramContext } from "../context/TelegramContext";
+import { customUserTelegramId } from "../utils/config";
 
 const Referral = () => {
   const { userTelegramId } = useTelegramContext();
   const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    const invitelink = `https://t.me/RedTon_bot/Red?startapp=${userTelegramId}`;
-
-    navigator.clipboard.writeText(invitelink).then(() => {
-      setCopied(true);
-    });
-  };
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setCopied(false);
-    }, 3000);
+    if (userTelegramId || customUserTelegramId) {
+      const baseUrl = window.location.origin;
+      setInviteLink(
+        `${baseUrl}?startapp=${userTelegramId || customUserTelegramId}`
+      );
+    }
+  }, [userTelegramId]);
 
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [copied]);
+  const handleCopy = () => {
+    if (inviteLink && !isDisabled) {
+      navigator.clipboard.writeText(inviteLink).then(() => {
+        setCopied(true);
+        setIsDisabled(true);
+        setTimeout(() => {
+          setCopied(false);
+          setIsDisabled(false);
+        }, 3000);
+      });
+    }
+  };
+
   return (
     <div className="rankings h-full w-full relative overflow-y-auto overflow-x-hidden px-[19px] pt-[20px] flex flex-col justify-between">
       <h1 className="text-[32px] font-[600] text-center leading-[1.1]">
@@ -42,7 +50,7 @@ const Referral = () => {
 
         <div className="mt-[20px] flex justify-between gap-[20px] ">
           <button className="h-[59px] flex gap-[10px] justify-center items-center rounded-[16px] bg-[red] flex-1 text-[20px] font-[600] ">
-            Invite friend <img src={inviteIcon} alt="invit" />
+            Invite friend <img src={inviteIcon} alt="inviteIcon" />
           </button>
           <button
             onClick={handleCopy}
