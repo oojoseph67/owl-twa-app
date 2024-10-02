@@ -2,7 +2,7 @@ import { useState } from "react";
 import Slider from "../components/Slider";
 import RPSResult from "../components/RPS-Result";
 import paperImg from "../assets/paper.png";
-import rockImg from "../assets/rockImg.png";
+import rockImg from "../assets/rock.png";
 import scissorsImg from "../assets/scissors.png";
 
 const MIN_SPEND = 100;
@@ -56,7 +56,7 @@ const RockPaperScissors = () => {
             <p className="text-[10px] opacity-60">Scissors</p>
             <img
               style={{ transform: "rotateY(180deg) rotate(90deg)" }}
-              className="rotate-[-90deg] w-[46px]"
+              className="rotate-[-90deg] h-[46px]"
               src={scissorsImg}
               alt="move"
             />
@@ -79,7 +79,7 @@ const RockPaperScissors = () => {
                         selected == 0 && "border"
                       } bg-[#121314] border-red rounded-[8px] w-[70px] h-[57px] grid place-items-center`}
                     >
-                      <img src={rockImg} alt="Rock" />
+                      <img className="h-[39px]" src={rockImg} alt="Rock" />
                     </div>
                     <p className="text-[12px] text-center">Rock</p>
                   </div>
@@ -89,7 +89,7 @@ const RockPaperScissors = () => {
                         selected == 1 && "border"
                       } bg-[#121314] border-red rounded-[8px] w-[70px] h-[57px] grid place-items-center`}
                     >
-                      <img src={paperImg} alt="Rock" />
+                      <img className="h-[39px]" src={paperImg} alt="Rock" />
                     </div>
                     <p className="text-[12px] text-center">Paper</p>
                   </div>
@@ -99,7 +99,7 @@ const RockPaperScissors = () => {
                         selected == 2 && "border"
                       } bg-[#121314] border-red rounded-[8px] w-[70px] h-[57px] grid place-items-center`}
                     >
-                      <img src={scissorsImg} alt="Rock" />
+                      <img className="h-[39px]" src={scissorsImg} alt="Rock" />
                     </div>
                     <p className="text-[12px] text-center">Scissors</p>
                   </div>

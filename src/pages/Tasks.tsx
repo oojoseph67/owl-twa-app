@@ -1,8 +1,8 @@
-import bird from "../assets/bird.svg";
-import ytLogo from "../assets/ytLogo.svg";
-import twLogo from "../assets/twLogo.svg";
-import igLogo from "../assets/igLogo.svg";
-import tgLogo from "../assets/tgLogo.svg";
+import bird from "../assets/bird.png";
+import ytLogo from "../assets/ytLogo.png";
+import twLogo from "../assets/twLogo.png";
+import igLogo from "../assets/igLogo.png";
+import tgLogo from "../assets/tgLogo.png";
 
 const Tasks = () => {
   return (
@@ -21,6 +21,7 @@ const Tasks = () => {
             <img className="w-[22px]" src={bird} alt="bird" />
           </span>
         </div>
+
         <div className="mt-[5px] w-full rounded-[16px] bg-[#242628] px-[10px] py-[18px] space-y-[20px]">
           <div className="task">
             <img src={ytLogo} alt="media" />

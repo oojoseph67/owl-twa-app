@@ -1,4 +1,4 @@
-import bird from "../assets/bird2.svg";
+import bird from "../assets/bird2.png";
 import { IoCopy as Copy } from "react-icons/io5";
 import { TbCopyCheckFilled as Copied } from "react-icons/tb";
 import inviteIcon from "../assets/invte.svg";
