@@ -1,7 +1,7 @@
-import bird from "../assets/bird.svg";
-import first from "../assets/first.svg";
-import second from "../assets/second.svg";
-import third from "../assets/third.svg";
+import bird from "../assets/bird.png";
+import first from "../assets/first.png";
+import second from "../assets/second.png";
+import third from "../assets/third.png";
 
 const Rank = ({ position }: { position: number }) => {
   return (
@@ -15,9 +15,15 @@ const Rank = ({ position }: { position: number }) => {
       </span>
       {position < 4 ? (
         <>
-          {position == 1 && <img src={first} alt="first" />}
-          {position == 2 && <img src={second} alt="second" />}
-          {position == 3 && <img src={third} alt="third" />}
+          {position == 1 && (
+            <img className="h-[30px]" src={first} alt="first" />
+          )}
+          {position == 2 && (
+            <img className="h-[30px]" src={second} alt="second" />
+          )}
+          {position == 3 && (
+            <img className="h-[30px]" src={third} alt="third" />
+          )}
         </>
       ) : (
         <p className="text-[14px] font-[600] opacity-60">#{position}</p>

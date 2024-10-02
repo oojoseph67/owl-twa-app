@@ -18,6 +18,9 @@
   .tasks .task {
     @apply w-full flex items-center justify-between gap-[10px];
   }
+  .tasks .task img {
+    @apply size-[35px];
+  }
   .tasks .task span h6 {
     @apply text-[14px] font-[500] leading-[1.1];
   }
