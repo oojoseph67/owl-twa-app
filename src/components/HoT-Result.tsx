@@ -7,12 +7,14 @@ const HeadorTailResult = ({
   spend,
   isWon,
   outcome,
+  status,
 }: {
   i: number | string;
   take: "Head" | "Tail";
   spend: number;
   isWon: boolean;
-  outcome: string;
+  outcome: number;
+  status: string;
 }) => {
   return (
     <div className="w-full h-[53px] bg-[#242628] rounded-[24px] flex px-[30px] items-center justify-between">
@@ -34,6 +36,13 @@ const HeadorTailResult = ({
           </p>
           <p className="text-[10px] font-[600]">{formatNumber(spend)}</p>
         </span>
+
+        <span className="flex flex-col items-center">
+          <p className="text-[10px] font-[500] opacity-60 leading-[1.0]">
+            Reward
+          </p>
+          <p className="text-[10px] font-[600]">{formatNumber(outcome)}</p>
+        </span>
         <span className="flex flex-col items-center">
           <p
             className={`${
@@ -42,7 +51,7 @@ const HeadorTailResult = ({
           >
             {isWon ? "Won" : "Lost"}
           </p>
-          <p className="text-[10px] font-[600] capitalize">{outcome}</p>
+          <p className="text-[10px] font-[600] capitalize">{status}</p>
         </span>
       </div>
     </div>

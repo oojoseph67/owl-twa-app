@@ -38,7 +38,7 @@ export function useGetUserQuery({
 
         return { userData, gameData };
       } catch (error: any) {
-        console.log({ error });
+        // console.log({ error });
         if (error.status === 404) {
           return error;
         } else {

@@ -24,13 +24,12 @@ interface OwlTWAStore {
 const loadState = () => {
   const points = parseInt(localStorage.getItem("points") || "0");
   const results = JSON.parse(localStorage.getItem("results-v2") || "[]");
-  const recentResults = results.slice(0, 10);
-  return { points, results: recentResults };
+  return { points, results };
 };
 
 const saveState = ({ points, results }: { points: number; results: any[] }) => {
   localStorage.setItem("points", points.toString());
-  localStorage.setItem("results", JSON.stringify(results));
+  localStorage.setItem("results-v2", JSON.stringify(results));
 };
 
 const initialState = loadState();

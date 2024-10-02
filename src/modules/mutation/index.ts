@@ -38,6 +38,73 @@ export function useRegisterUserMutation() {
   });
 }
 
+export function usePurchaseUsingPointsMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      points,
+      userTelegramId,
+    }: {
+      points: number;
+      userTelegramId: number;
+    }) => {
+      try {
+        const response = await axios.post(
+          `${BACKEND_URL}/rewards/purchase-using-points`,
+          {
+            telegramId: userTelegramId,
+            points,
+          }
+        );
+        return response.data;
+      } catch (error) {
+        // console.log(error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["user"],
+      });
+    },
+  });
+}
+
+export function useClaimRewardsMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      points,
+      userTelegramId,
+    }: {
+      points: number;
+      userTelegramId: number;
+    }) => {
+      console.log({ points, userTelegramId });
+      try {
+        const response = await axios.post(
+          `${BACKEND_URL}/rewards/update-reward`,
+          {
+            telegramId: userTelegramId,
+            points,
+          }
+        );
+        return response.data;
+      } catch (error) {
+        // console.log(error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["user"],
+      });
+    },
+  });
+}
+
 // syntax
 export function useMutationExample() {
   // call needed functions
