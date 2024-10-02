@@ -24,10 +24,7 @@ export function useGetUserQuery({
   userTelegramId,
 }: {
   userTelegramId: string | number;
-  }) {
-  
-  console.log('user query', userTelegramId)
-  
+}) {
   return useQuery({
     queryKey: ["user"],
     queryFn: async () => {
@@ -36,14 +33,12 @@ export function useGetUserQuery({
           `${BACKEND_URL}/user/${userTelegramId}/user`
         );
 
-        console.log({ response })
-
         const userData = response.data.user as UserInterface;
         const gameData = response.data.game as GameDataInterface;
 
         return { userData, gameData };
       } catch (error: any) {
-        console.log({ error })
+        console.log({ error });
         if (error.status === 404) {
           return error;
         } else {

@@ -30,8 +30,6 @@ const Home = () => {
         const searchParams = new URLSearchParams(location.search);
         const refCode = searchParams.get("startapp");
 
-        console.log("registering user");
-
         registerUserMutation.mutate({
           username: firstName || "Joseph",
           userTelegramId: Number(userTelegramId || customUserTelegramId),

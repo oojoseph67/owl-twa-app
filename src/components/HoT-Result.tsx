@@ -1,4 +1,5 @@
 import React from "react";
+import { formatNumber } from "../utils";
 
 const HeadorTailResult = ({
   i,
@@ -11,7 +12,7 @@ const HeadorTailResult = ({
   take: "Head" | "Tail";
   spend: number;
   isWon: boolean;
-  outcome: number;
+  outcome: string;
 }) => {
   return (
     <div className="w-full h-[53px] bg-[#242628] rounded-[24px] flex px-[30px] items-center justify-between">
@@ -31,7 +32,7 @@ const HeadorTailResult = ({
           <p className="text-[10px] font-[500] opacity-60 leading-[1.0]">
             Spent
           </p>
-          <p className="text-[10px] font-[600]">{spend}</p>
+          <p className="text-[10px] font-[600]">{formatNumber(spend)}</p>
         </span>
         <span className="flex flex-col items-center">
           <p
@@ -41,7 +42,7 @@ const HeadorTailResult = ({
           >
             {isWon ? "Won" : "Lost"}
           </p>
-          <p className="text-[10px] font-[600]">{outcome}</p>
+          <p className="text-[10px] font-[600] capitalize">{outcome}</p>
         </span>
       </div>
     </div>
