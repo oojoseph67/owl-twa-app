@@ -1,11 +1,11 @@
 import bigbird from "../assets/bigbird.png";
-import bird from "../assets/bird.svg";
-import hand from "../assets/hand.svg";
+import bird from "../assets/bird.png";
+import hand from "../assets/hand.png";
 import tonIcon from "../assets/ton.svg";
-import spin from "../assets/palette.svg";
-import leaf from "../assets/leaf icon.svg";
-import bot from "../assets/chatbot.svg";
-import star from "../assets/glossy star.svg";
+import spin from "../assets/palette.png";
+import leaf from "../assets/leaf icon.png";
+import bot from "../assets/chatbot.png";
+import star from "../assets/glossy star.png";
 import { Link } from "react-router-dom";
 
 const Home = () => {
@@ -18,7 +18,7 @@ const Home = () => {
           <p className="font-[600] text-[16px]">
             2,436 <span className="text-[10px] opacity-60">$REDBIRD</span>
           </p>
-          <img src={bird} alt="bird" />
+          <img className="w-[41px]" src={bird} alt="bird" />
         </div>
         <button className="bg-red w-full h-[43px] rounded-[8px] flex items-center gap-[10px] justify-center">
           <img src={tonIcon} alt="ton" />
@@ -46,7 +46,7 @@ const Home = () => {
             to="/headortail"
             className="w-[33%] h-[114px] pt-[10px] pb-[10px] rounded-[16px] border border-red flex flex-col justify-between items-center"
           >
-            <img src={bird} alt="bird" />
+            <img className="size-[45px]" src={bird} alt="bird" />
             <p className="text-[12px] font-[500] text-center">Head or Tail</p>
             <button className="bg-red rounded-[4px] px-[10px] text-[10px] font-[500]">
               play
@@ -57,7 +57,7 @@ const Home = () => {
             to="/rock-paper-scissors"
             className="w-[33%] h-[114px] pt-[10px] pb-[10px] rounded-[16px] border border-red flex flex-col justify-between items-center"
           >
-            <img src={hand} alt="hand" />
+            <img className="h-[39px]" src={hand} alt="hand" />
             <p className="text-[12px] font-[500] text-center leading-[1.1]">
               Rock paper <br /> scissor
             </p>
@@ -67,7 +67,7 @@ const Home = () => {
           </Link>
 
           <div className="w-[33%] h-[114px] pt-[10px] pb-[10px] rounded-[16px] border border-red flex flex-col justify-between items-center">
-            <img src={spin} alt="spin" />
+            <img className="h-[39px]" src={spin} alt="spin" />
             <p className="text-[12px] font-[500] text-center">Spinning</p>
             <p className="text-red text-[12px] font-[500]">soon</p>
           </div>
@@ -79,7 +79,7 @@ const Home = () => {
 
         <div className="mt-[5px] w-full h-fit bg-[#242628] rounded-[16px] p-[18px] space-y-[10px]">
           <div className="flex items-center gap-[5px]">
-            <img src={leaf} alt="leaf" />
+            <img className="h-[20px]" src={leaf} alt="leaf" />
             <div>
               <p className="text-[12px] font-[500] leading-[1.1]">
                 Telegram Age
@@ -89,7 +89,7 @@ const Home = () => {
           </div>
 
           <div className="flex items-center gap-[5px]">
-            <img src={bot} alt="bot" />
+            <img className="h-[20px]" src={bot} alt="bot" />
             <div>
               <p className="text-[12px] font-[500] leading-[1.1]">
                 Account Activity
@@ -99,7 +99,7 @@ const Home = () => {
           </div>
 
           <div className="flex items-center gap-[5px]">
-            <img src={star} alt="star" />
+            <img className="h-[20px]" src={star} alt="star" />
             <div>
               <p className="text-[12px] font-[500] leading-[1.1]">
                 Telegram Premium

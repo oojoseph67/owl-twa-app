@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import bird from "../assets/bird3.svg";
+import { useState } from "react";
+import bird from "../assets/bird2.png";
 import HeadorTailResult from "../components/HoT-Result";
 import Slider from "../components/Slider";
 
@@ -14,7 +14,7 @@ const HeadorTail = () => {
       <h1 className="text-[32px] font-[600] text-center">Head or Tail</h1>
 
       <div className="mt-[20px] bg-[#242628] w-full h-[380px] rounded-[16px] px-[20px] py-[20px] flex flex-col items-center">
-        <img src={bird} alt="bird" />
+        <img className="h-[139px]" src={bird} alt="bird" />
 
         <div className="w-full mt-[20px]">
           {true ? (
