@@ -1,11 +1,11 @@
 import bigbird from "../assets/bigbird.png";
-import bird from "../assets/bird.png";
+import bird from "../assets/bird.svg";
 import hand from "../assets/hand.svg";
 import tonIcon from "../assets/ton.svg";
 import spin from "../assets/palette.svg";
-import leaf from "../assets/leaf.png";
-import bot from "../assets/chatbot.png";
-import star from "../assets/glossy star.png";
+import leaf from "../assets/leaf icon.svg";
+import bot from "../assets/chatbot.svg";
+import star from "../assets/glossy star.svg";
 import { Link } from "react-router-dom";
 
 const Home = () => {

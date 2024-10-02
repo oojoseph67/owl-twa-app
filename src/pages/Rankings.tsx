@@ -8,7 +8,7 @@ const Rankings = () => {
       </h1>
 
       <div className="mt-[40px] bg-[#242628] rounded-[16px] w-full py-[20px] px-[15px] space-y-[20px]">
-        {Array.from({ length: 10 }).map((_, i) => (
+        {Array.from({ length: 20 }).map((_, i) => (
           <Rank key={i} position={i + 1} />
         ))}
       </div>

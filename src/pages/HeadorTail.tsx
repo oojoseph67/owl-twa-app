@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import bird from "../assets/bird3.png";
+import bird from "../assets/bird3.svg";
 import HeadorTailResult from "../components/HoT-Result";
 import Slider from "../components/Slider";
 

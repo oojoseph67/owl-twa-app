@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import smallbird from "../assets/bird.png";
+import smallbird from "../assets/bird.svg";
 
 interface SliderProps {
   balance: number;

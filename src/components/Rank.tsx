@@ -1,4 +1,4 @@
-import bird from "../assets/bird.png";
+import bird from "../assets/bird.svg";
 import first from "../assets/first.svg";
 import second from "../assets/second.svg";
 import third from "../assets/third.svg";
