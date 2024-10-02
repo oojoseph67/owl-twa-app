@@ -4,14 +4,69 @@ import RPSResult from "../components/RPS-Result";
 import paperImg from "../assets/paper.png";
 import rockImg from "../assets/rock.png";
 import scissorsImg from "../assets/scissors.png";
+import useOwlTWAStore from "../utils/store";
+import { useGetUserQuery } from "../modules/query";
+import { customUserTelegramId } from "../utils/config";
+import { useTelegramContext } from "../context/TelegramContext";
 
 const MIN_SPEND = 100;
 
 const RockPaperScissors = () => {
-  const [balance, setBalance] = useState<number>(2142);
-  const [spend, setSpend] = useState<number>(MIN_SPEND);
+  const { userTelegramId } = useTelegramContext();
 
+  const { data: userQueryData } = useGetUserQuery({
+    userTelegramId: customUserTelegramId,
+  });
+
+  const { userData } = userQueryData || {};
+  const { points: userPoints } = userData || {};
+
+  console.log({ userPoints });
+
+  const [spend, setSpend] = useState<number>(MIN_SPEND);
   const [selected, setSelected] = useState<number | null>(null);
+  const [botSelected, setBotSelected] = useState<number | null>(null);
+
+  const {
+    userMoves,
+    botMoves,
+    botScores,
+    userScores,
+    spend: spendStore,
+    rpsResults,
+    gameCount,
+    updateSpend,
+    setRPSResult,
+    addMove,
+  } = useOwlTWAStore();
+  const reversedResults = rpsResults.slice().reverse().slice(0, 10);
+
+  console.log({ userMoves });
+  console.log({ botMoves });
+  console.log({ botScores });
+  console.log({ userScores });
+  console.log({ gameCount });
+  console.log({ spend: spendStore });
+  console.log({ rpsResults });
+
+  const handleMove = () => {
+    console.log({ selected, spend });
+    if (selected === null || selected === undefined || !spend) return;
+
+    updateSpend(spend);
+    const possibleMoves = [0, 1, 2].filter((move) => move !== selected);
+    const randomMove =
+      possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    setBotSelected(randomMove);
+    const result = setRPSResult({
+      userMove: selected,
+      botMove: randomMove,
+      spend,
+    });
+    console.log({ result });
+    addMove(selected, true);
+    addMove(randomMove, false);
+  };
 
   return (
     <div className="h-full w-full relative overflow-y-auto overflow-x-hidden px-[19px] py-[20px]">
@@ -25,7 +80,34 @@ const RockPaperScissors = () => {
           <div className="flex flex-col items-center">
             <p className="text-[12px]">Your move</p>
             <p className="text-[10px] opacity-60">Rock</p>
-            <img className="rotate-[40deg] w-[46px]" src={rockImg} alt="move" />
+            {selected === null && (
+              <img
+                className="rotate-[40deg] w-[46px]"
+                src={rockImg}
+                alt="move"
+              />
+            )}
+            {selected === 0 && (
+              <img
+                className="rotate-[40deg] w-[46px]"
+                src={rockImg}
+                alt="move"
+              />
+            )}
+            {selected === 1 && (
+              <img
+                className="rotate-[40deg] w-[46px]"
+                src={paperImg}
+                alt="move"
+              />
+            )}
+            {selected === 2 && (
+              <img
+                className="rotate-[40deg] w-[46px]"
+                src={scissorsImg}
+                alt="move"
+              />
+            )}
           </div>
 
           <div>
@@ -44,8 +126,8 @@ const RockPaperScissors = () => {
                 <p
                   className={`flex items-center justify-center gap-[3px]  font-[600] text-[12px]`}
                 >
-                  <span className="text-[#FDB3C3]">1</span> -{" "}
-                  <span className="text-[#CD17C1]">0</span>
+                  <span className="text-[#FDB3C3]">{userScores}</span> -{" "}
+                  <span className="text-[#CD17C1]">{botScores}</span>
                 </p>
               </div>
             )}
@@ -54,12 +136,38 @@ const RockPaperScissors = () => {
           <div className="flex flex-col items-center">
             <p className="text-[12px]">Opponent</p>
             <p className="text-[10px] opacity-60">Scissors</p>
-            <img
-              style={{ transform: "rotateY(180deg) rotate(90deg)" }}
-              className="rotate-[-90deg] h-[46px]"
-              src={scissorsImg}
-              alt="move"
-            />
+            {botSelected === null && (
+              <img
+                style={{ transform: "rotateY(180deg) rotate(90deg)" }}
+                className="rotate-[-90deg] h-[46px]"
+                src={rockImg}
+                alt="move"
+              />
+            )}
+            {botSelected === 0 && (
+              <img
+                style={{ transform: "rotateY(180deg) rotate(90deg)" }}
+                className="rotate-[-90deg] h-[46px]"
+                src={rockImg}
+                alt="move"
+              />
+            )}
+            {botSelected === 1 && (
+              <img
+                style={{ transform: "rotateY(180deg) rotate(90deg)" }}
+                className="rotate-[-90deg] h-[46px]"
+                src={paperImg}
+                alt="move"
+              />
+            )}
+            {botSelected === 2 && (
+              <img
+                style={{ transform: "rotateY(180deg) rotate(90deg)" }}
+                className="rotate-[-90deg] h-[46px]"
+                src={scissorsImg}
+                alt="move"
+              />
+            )}
           </div>
         </div>
 
@@ -107,7 +215,7 @@ const RockPaperScissors = () => {
               </div>
 
               <Slider
-                balance={balance}
+                balance={userPoints || 100_000}
                 spend={spend}
                 minSpend={MIN_SPEND}
                 onChange={(newSpend) => setSpend(newSpend)}
@@ -117,8 +225,11 @@ const RockPaperScissors = () => {
                 className={`${
                   selected == null ? "bg-[#534949]" : "bg-red"
                 } mt-[10px] w-full h-[43px] rounded-[8px] font-[600]`}
+                onClick={handleMove}
               >
-                {selected == null ? "Select Move" : "Go (Round 1/3)"}
+                {selected == null
+                  ? "Select Move"
+                  : `Go (Round ${gameCount + 1}/3)`}
               </button>
             </>
           ) : (
@@ -145,22 +256,24 @@ const RockPaperScissors = () => {
         <p className="font-[500] opacity-60">Results</p>
 
         <div className="mt-[5px] space-y-[3px]">
-          <RPSResult
-            i="1"
-            userScore={2}
-            botScore={1}
-            spend={150}
-            outcome={300}
-            isWon={true}
-          />
-          <RPSResult
-            i="2"
-            userScore={0}
-            botScore={2}
-            spend={500}
-            outcome={500}
-            isWon={false}
-          />
+          {reversedResults.length === 0 ? (
+            <div>No results available.</div>
+          ) : (
+            reversedResults.map((result, index) => {
+              console.log({ result });
+              return (
+                <RPSResult
+                  key={index}
+                  i={index + 1}
+                  userScore={result.userScore}
+                  botScore={result.botScore}
+                  spend={result.spend}
+                  outcome={result.outcome || 0}
+                  isWon={result.isWon}
+                />
+              );
+            })
+          )}
         </div>
       </div>
     </div>

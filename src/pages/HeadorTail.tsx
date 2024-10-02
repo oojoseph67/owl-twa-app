@@ -25,8 +25,8 @@ const HeadorTail = () => {
 
   const { userData } = userQueryData || {};
   const { points: userPoints } = userData || {};
-  const { results, addResult, setHeadOrTailResult } = useOwlTWAStore();
-  const reversedResults = results.slice().reverse().slice(0, 10);
+  const { hotResults, addHOTResult, setHeadOrTailResult } = useOwlTWAStore();
+  const reversedResults = hotResults.slice().reverse().slice(0, 10);
 
   const [spend, setSpend] = useState<number>(MIN_SPEND);
   const [selectedBet, setSelectedBet] = useState<string | null>("Head");
@@ -51,7 +51,7 @@ const HeadorTail = () => {
             outcome: headOrTailResult?.outcome,
             status: headOrTailResult?.status,
           };
-          addResult(results);
+          addHOTResult(results);
 
           if (headOrTailResult?.status === "won") {
             claimRewardsMutation.mutate({

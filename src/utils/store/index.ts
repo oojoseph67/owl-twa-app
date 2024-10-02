@@ -7,11 +7,27 @@ export type Result = {
   status: string;
 };
 
+export type RPSResult = {
+  userScore: number;
+  botScore: number;
+  spend: number;
+  outcome?: number;
+  isWon: boolean;
+};
+
 interface OwlTWAStore {
   points: number;
-  results: Result[];
+  hotResults: Result[];
+  rpsResults: RPSResult[];
+  userMoves: number[];
+  botMoves: number[];
+  userScores: number;
+  botScores: number;
+  gameCount: number;
+  spend: number;
+  updateSpend: (spend: number) => void;
   addPoints: (points: number) => void;
-  addResult: (result: any) => void;
+  addHOTResult: (result: any) => void;
   setHeadOrTailResult: ({
     selectedBet,
     spend,
@@ -19,36 +35,79 @@ interface OwlTWAStore {
     selectedBet: string;
     spend: number;
   }) => Result | null;
+  addRPSResult: () => void;
+  setRPSResult: ({
+    userMove,
+    botMove,
+    spend,
+  }: {
+    userMove: number;
+    botMove: number;
+    spend: number;
+  }) => RPSResult | null;
+  resetRPS: () => void;
+  resetMove: () => void;
+  addMove: (move: number, isUserMove: boolean) => void;
 }
 
 const loadState = () => {
   const points = parseInt(localStorage.getItem("points") || "0");
-  const results = JSON.parse(localStorage.getItem("results-v2") || "[]");
-  return { points, results };
+  const hotResults = JSON.parse(localStorage.getItem("hotResults") || "[]");
+  const rpsResults = JSON.parse(localStorage.getItem("rpsResultsV2") || "[]");
+  return { points, hotResults, rpsResults };
 };
 
-const saveState = ({ points, results }: { points: number; results: any[] }) => {
+const saveState = ({
+  points,
+  hotResults,
+  rpsResults,
+}: {
+  points: number;
+  hotResults: Result[];
+  rpsResults: RPSResult[];
+}) => {
   localStorage.setItem("points", points.toString());
-  localStorage.setItem("results-v2", JSON.stringify(results));
+  localStorage.setItem("hotResults", JSON.stringify(hotResults));
+  localStorage.setItem("rpsResultsV2", JSON.stringify(rpsResults));
 };
 
 const initialState = loadState();
 
 const useOwlTWAStore = create<OwlTWAStore>((set) => ({
   points: initialState.points,
-  results: initialState.results,
-  addPoints(points) {
+  hotResults: initialState.hotResults,
+  rpsResults: initialState.rpsResults,
+  userMoves: [],
+  botMoves: [],
+  userScores: 0,
+  botScores: 0,
+  gameCount: 0,
+  spend: 0,
+  updateSpend(spend: number) {
+    set((state) => {
+      return { spend };
+    });
+  },
+  addPoints(points: number) {
     set((state) => {
       const newPoints = state.points + points;
-      saveState({ points: newPoints, results: state.results });
+      saveState({
+        points: newPoints,
+        hotResults: state.hotResults,
+        rpsResults: state.rpsResults,
+      });
       return { points: newPoints };
     });
   },
-  addResult(result) {
+  addHOTResult(result) {
     set((state) => {
-      const newResults = [...state.results, result];
-      saveState({ points: state.points, results: newResults });
-      return { results: newResults };
+      const newResults = [...state.hotResults, result];
+      saveState({
+        points: state.points,
+        hotResults: newResults,
+        rpsResults: state.rpsResults,
+      });
+      return { hotResults: newResults };
     });
   },
   setHeadOrTailResult({
@@ -79,6 +138,98 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
     }
 
     return null;
+  },
+  addRPSResult() {
+    set((state) => {
+      const isWon = state.userScores > state.botScores;
+      const outcome = isWon ? state.spend * 2 : 0;
+
+      console.log("outcome", outcome);
+
+      const result = {
+        userScore: state.userScores,
+        botScore: state.botScores,
+        spend: state.spend,
+        isWon,
+        outcome,
+      };
+
+      const newResults = [...state.rpsResults, result];
+
+      saveState({
+        points: state.points,
+        hotResults: state.hotResults,
+        rpsResults: newResults,
+      });
+      return { rpsResults: newResults };
+    });
+  },
+  setRPSResult({
+    userMove,
+    botMove,
+    spend,
+  }: {
+    userMove: number;
+    botMove: number;
+    spend: number;
+  }): RPSResult | null {
+    const winConditions = [
+      [0, 2], // Rock beats Scissors
+      [1, 0], // Paper beats Rock
+      [2, 1], // Scissors beats Paper
+    ];
+    const isWon = winConditions.some(
+      (condition) => condition[0] === userMove && condition[1] === botMove
+    );
+
+    set((state) => {
+      return {
+        userScores: isWon ? state.userScores + 1 : state.userScores,
+        botScores: isWon ? state.botScores : state.botScores + 1,
+        gameCount: state.gameCount + 1,
+      };
+    });
+
+    return {
+      userScore: isWon ? 1 : 0,
+      botScore: isWon ? 0 : 1,
+      spend,
+      isWon,
+    };
+  },
+  resetMove() {
+    set((state) => {
+      return {
+        userMoves: [],
+        botMoves: [],
+      };
+    });
+  },
+  resetRPS() {
+    set({
+      userScores: 0,
+      botScores: 0,
+      gameCount: 0,
+      spend: 0,
+    });
+  },
+  addMove(move, isUserMove) {
+    set((state) => {
+      const newMoves = isUserMove
+        ? [...state.userMoves, move]
+        : [...state.botMoves, move];
+      if (state.gameCount >= 3) {
+        console.log(`inside here dawg ${isUserMove ? "user" : "bot"}`);
+        state.addRPSResult();
+        state.resetRPS();
+        state.resetMove();
+        //     const finalResult = state.calculateFinalResult();
+        //     // Save the final result
+        //     state.addRPSResult(finalResult);
+        //     state.resetUserMoves();
+      }
+      return isUserMove ? { userMoves: newMoves } : { botMoves: newMoves };
+    });
   },
 }));
 
