@@ -154,8 +154,6 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
       const isWon = state.userScores > state.botScores;
       const outcome = isWon ? state.spend * 2 : 0;
 
-      console.log("outcome", outcome);
-
       const result = {
         userScore: state.userScores,
         botScore: state.botScores,
@@ -165,8 +163,6 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
       };
 
       const newResults = [...state.rpsResults, result];
-
-      console.log("result after winner ", result);
 
       set({ currentRPSResult: result });
 
@@ -234,15 +230,11 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
         ? [...state.userMoves, move]
         : [...state.botMoves, move];
 
-      //   if (state.userScores >= 3 || state.botScores >= 3) {
-      //     console.log(
-      //       `Final result: ${state.userScores >= 3 ? "User wins!" : "Bot wins!"}`
-      //     );
-      //     state.resetRPS();
-      //     state.resetMove();
-      //   } else
-      if (state.gameCount >= 3) {
-        console.log(`inside here dawg ${isUserMove ? "user" : "bot"}`);
+      if (state.userScores >= 3 || state.botScores >= 3) {
+        state.addRPSResult();
+        state.resetRPS();
+        state.resetMove();
+      } else if (state.gameCount >= 3) {
         state.addRPSResult();
         state.resetRPS();
         state.resetMove();

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import smallbird from "../assets/bird.png";
 
 interface SliderProps {
@@ -16,94 +16,84 @@ const Slider: React.FC<SliderProps> = ({
   onChange,
   disabled,
 }) => {
-  const sliderRef = useRef<HTMLButtonElement | null>(null); // Update type to HTMLButtonElement
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Function to calculate spend based on slider width
   const calculateSpend = (clientX: number): void => {
     if (!sliderRef.current) return;
 
-    const sliderWidth = sliderRef.current.offsetWidth;
-    const offsetLeft = sliderRef.current.getBoundingClientRect().left;
-    let sliderPercentage = ((clientX - offsetLeft) / sliderWidth) * 100;
+    const rect = sliderRef.current.getBoundingClientRect();
+    let percentage = (clientX - rect.left) / rect.width;
+    percentage = Math.max(0, Math.min(1, percentage));
 
-    if (sliderPercentage < 0) sliderPercentage = 0;
-    if (sliderPercentage > 100) sliderPercentage = 100;
-
-    const newSpend = minSpend + ((balance - minSpend) * sliderPercentage) / 100;
-
-    onChange(newSpend);
+    const newSpend = minSpend + (balance - minSpend) * percentage;
+    onChange(Math.round(newSpend));
   };
 
-  // Function to handle dragging for desktop (mouse)
-  const handleMouseDrag = (e: MouseEvent): void => {
-    calculateSpend(e.clientX);
+  const handleStart = (clientX: number): void => {
+    if (disabled) return;
+    setIsDragging(true);
+    calculateSpend(clientX);
   };
 
-  // Function to handle dragging for mobile (native touch event)
-  const handleTouchDrag = (e: TouchEvent): void => {
-    calculateSpend(e.touches[0].clientX); // Use the first touch point
+  const handleMove = (clientX: number): void => {
+    if (isDragging) {
+      calculateSpend(clientX);
+    }
   };
 
-  // Function to start dragging with mouse
-  const handleMouseDown = (): void => {
-    document.addEventListener("mousemove", handleMouseDrag);
-    document.addEventListener("mouseup", handleMouseUp);
+  const handleEnd = (): void => {
+    setIsDragging(false);
   };
-  // Function to start dragging with touch
-  const handleTouchStart = (): void => {
-    document.addEventListener("touchmove", handleTouchDrag);
-    document.addEventListener("touchend", handleTouchEnd);
-  };
-  // Function to stop mouse dragging
-  const handleMouseUp = (): void => {
-    document.removeEventListener("mousemove", handleMouseDrag);
-    document.removeEventListener("mouseup", handleMouseUp);
-  };
-  // Function to stop touch dragging
-  const handleTouchEnd = (): void => {
-    document.removeEventListener("touchmove", handleTouchDrag);
-    document.removeEventListener("touchend", handleTouchEnd);
-  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => handleMove(e.clientX);
+    const handleTouchMove = (e: TouchEvent) => handleMove(e.touches[0].clientX);
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('touchmove', handleTouchMove);
+      document.addEventListener('mouseup', handleEnd);
+      document.addEventListener('touchend', handleEnd);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchend', handleEnd);
+    };
+  }, [isDragging]);
+
+  const percentage = ((spend - minSpend) / (balance - minSpend)) * 100;
 
   return (
-    <div className="w-full mt-[7px]">
-      <div className="flex justify-between items-center mb-[3px]">
-        <p className="text-[12px] font-[500]">Balance: {balance.toFixed(0)}</p>
-        <p className="text-[12px] font-[500]">Spend: {spend.toFixed(0)}</p>
+    <div className="w-full mt-2">
+      <div className="flex justify-between items-center mb-1">
+        <p className="text-xs font-medium">Balance: {balance.toFixed(0)}</p>
+        <p className="text-xs font-medium">Spend: {spend.toFixed(0)}</p>
       </div>
 
-      <div className="w-full h-[45px] rounded-[8px] bg-[#121314] flex justify-between items-center px-[10px] gap-[10px]">
-        <p className="text-[10px]">Min</p>
-        <div className="flex-1 w-full">
-          <button
-            ref={sliderRef}
-            disabled={disabled}
-            className={`relative w-full h-[7px] bg-white rounded ${
-              disabled ? "opacity-60" : ""
-            }`}
-            onMouseDown={handleMouseDown}
-            onTouchStart={handleTouchStart}
+      <div className="w-full h-12 rounded-lg bg-gray-800 flex justify-between items-center px-3 gap-3">
+        <p className="text-xs">Min</p>
+        <div
+          ref={sliderRef}
+          className={`flex-1 h-2 bg-gray-600 rounded-full relative ${disabled ? 'opacity-60' : ''}`}
+          onMouseDown={(e) => handleStart(e.clientX)}
+          onTouchStart={(e) => handleStart(e.touches[0].clientX)}
+        >
+          <div
+            className="absolute h-full bg-red-500 rounded-full"
+            style={{ width: `${percentage}%` }}
+          />
+          <div
+            className="absolute top-1/2 -translate-y-1/2 cursor-pointer"
+            style={{ left: `calc(${percentage}% - 14px)` }}
           >
-            <div
-              className="absolute h-full bg-red rounded"
-              style={{
-                width: `${((spend - minSpend) / (balance - minSpend)) * 100}%`,
-              }}
-            />
-
-            <div
-              className="absolute top-1/2 -translate-y-1/2 cursor-pointer"
-              style={{
-                left: `calc(${
-                  ((spend - minSpend) / (balance - minSpend)) * 100
-                }% - 10px)`,
-              }}
-            >
-              <img className="w-[27px]" src={smallbird} alt="bird" />
-            </div>
-          </button>
+            <img className="w-7 h-7" src={smallbird} alt="bird" />
+          </div>
         </div>
-        <p className="text-[10px]">All</p>
+        <p className="text-xs">All</p>
       </div>
     </div>
   );
