@@ -6,6 +6,7 @@ interface SliderProps {
   spend: number;
   minSpend: number;
   onChange: (newSpend: number) => void;
+  disabled?: boolean;
 }
 
 const Slider: React.FC<SliderProps> = ({
@@ -13,8 +14,9 @@ const Slider: React.FC<SliderProps> = ({
   spend,
   minSpend,
   onChange,
+  disabled,
 }) => {
-  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const sliderRef = useRef<HTMLButtonElement | null>(null); // Update type to HTMLButtonElement
 
   // Function to calculate spend based on slider width
   const calculateSpend = (clientX: number): void => {
@@ -73,9 +75,12 @@ const Slider: React.FC<SliderProps> = ({
       <div className="w-full h-[45px] rounded-[8px] bg-[#121314] flex justify-between items-center px-[10px] gap-[10px]">
         <p className="text-[10px]">Min</p>
         <div className="flex-1 w-full">
-          <div
+          <button
             ref={sliderRef}
-            className="relative w-full h-[7px] bg-white rounded"
+            disabled={disabled}
+            className={`relative w-full h-[7px] bg-white rounded ${
+              disabled ? "opacity-60" : ""
+            }`}
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
           >
@@ -96,7 +101,7 @@ const Slider: React.FC<SliderProps> = ({
             >
               <img className="w-[27px]" src={smallbird} alt="bird" />
             </div>
-          </div>
+          </button>
         </div>
         <p className="text-[10px]">All</p>
       </div>

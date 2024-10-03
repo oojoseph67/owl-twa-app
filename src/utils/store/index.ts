@@ -25,6 +25,9 @@ interface OwlTWAStore {
   botScores: number;
   gameCount: number;
   spend: number;
+  currentRPSResult: RPSResult | null;
+  purchased: boolean;
+  updatePurchased: (purchased: boolean) => void;
   updateSpend: (spend: number) => void;
   addPoints: (points: number) => void;
   addHOTResult: (result: any) => void;
@@ -53,7 +56,7 @@ interface OwlTWAStore {
 const loadState = () => {
   const points = parseInt(localStorage.getItem("points") || "0");
   const hotResults = JSON.parse(localStorage.getItem("hotResults") || "[]");
-  const rpsResults = JSON.parse(localStorage.getItem("rpsResultsV2") || "[]");
+  const rpsResults = JSON.parse(localStorage.getItem("rpsResultsV3") || "[]");
   return { points, hotResults, rpsResults };
 };
 
@@ -68,7 +71,7 @@ const saveState = ({
 }) => {
   localStorage.setItem("points", points.toString());
   localStorage.setItem("hotResults", JSON.stringify(hotResults));
-  localStorage.setItem("rpsResultsV2", JSON.stringify(rpsResults));
+  localStorage.setItem("rpsResultsV3", JSON.stringify(rpsResults));
 };
 
 const initialState = loadState();
@@ -83,6 +86,13 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
   botScores: 0,
   gameCount: 0,
   spend: 0,
+  currentRPSResult: null,
+  purchased: false,
+  updatePurchased(purchased: boolean) {
+    set((state) => {
+      return { purchased };
+    });
+  },
   updateSpend(spend: number) {
     set((state) => {
       return { spend };
@@ -156,6 +166,10 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
 
       const newResults = [...state.rpsResults, result];
 
+      console.log("result after winner ", result);
+
+      set({ currentRPSResult: result });
+
       saveState({
         points: state.points,
         hotResults: state.hotResults,
@@ -187,6 +201,7 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
         userScores: isWon ? state.userScores + 1 : state.userScores,
         botScores: isWon ? state.botScores : state.botScores + 1,
         gameCount: state.gameCount + 1,
+        spend,
       };
     });
 
@@ -218,16 +233,23 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
       const newMoves = isUserMove
         ? [...state.userMoves, move]
         : [...state.botMoves, move];
+
+      //   if (state.userScores >= 3 || state.botScores >= 3) {
+      //     console.log(
+      //       `Final result: ${state.userScores >= 3 ? "User wins!" : "Bot wins!"}`
+      //     );
+      //     state.resetRPS();
+      //     state.resetMove();
+      //   } else
       if (state.gameCount >= 3) {
         console.log(`inside here dawg ${isUserMove ? "user" : "bot"}`);
         state.addRPSResult();
         state.resetRPS();
         state.resetMove();
-        //     const finalResult = state.calculateFinalResult();
-        //     // Save the final result
-        //     state.addRPSResult(finalResult);
-        //     state.resetUserMoves();
+
+        return state;
       }
+
       return isUserMove ? { userMoves: newMoves } : { botMoves: newMoves };
     });
   },

@@ -1,19 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Slider from "../components/Slider";
 import RPSResult from "../components/RPS-Result";
 import paperImg from "../assets/paper.png";
 import rockImg from "../assets/rock.png";
 import scissorsImg from "../assets/scissors.png";
-import useOwlTWAStore from "../utils/store";
+import useOwlTWAStore, { RPSResult as RPSResultType } from "../utils/store";
 import { useGetUserQuery } from "../modules/query";
 import { customUserTelegramId } from "../utils/config";
 import { useTelegramContext } from "../context/TelegramContext";
+import {
+  useClaimRewardsMutation,
+  usePurchaseUsingPointsMutation,
+} from "../modules/mutation";
+import { formatNumber } from "../utils";
 
 const MIN_SPEND = 100;
 
 const RockPaperScissors = () => {
   const { userTelegramId } = useTelegramContext();
 
+  const purchaseUsingPointsMutation = usePurchaseUsingPointsMutation();
+  const claimRewardsMutation = useClaimRewardsMutation();
   const { data: userQueryData } = useGetUserQuery({
     userTelegramId: customUserTelegramId,
   });
@@ -26,6 +33,9 @@ const RockPaperScissors = () => {
   const [spend, setSpend] = useState<number>(MIN_SPEND);
   const [selected, setSelected] = useState<number | null>(null);
   const [botSelected, setBotSelected] = useState<number | null>(null);
+  const [displayWining, setDisplayWining] = useState(false);
+  // const [result, setResult] = useState<RPSResultType | null>();
+  // const [purchased, setPurchased] = useState(false);
 
   const {
     userMoves,
@@ -35,25 +45,65 @@ const RockPaperScissors = () => {
     spend: spendStore,
     rpsResults,
     gameCount,
+    currentRPSResult,
+    purchased,
+    updatePurchased,
     updateSpend,
     setRPSResult,
     addMove,
   } = useOwlTWAStore();
   const reversedResults = rpsResults.slice().reverse().slice(0, 10);
+  // const currentResult = reversedResults[0];
 
   console.log({ userMoves });
   console.log({ botMoves });
   console.log({ botScores });
   console.log({ userScores });
   console.log({ gameCount });
+  console.log({ purchased });
   console.log({ spend: spendStore });
   console.log({ rpsResults });
 
-  const handleMove = () => {
-    console.log({ selected, spend });
+  const handlePurchase = () => {
     if (selected === null || selected === undefined || !spend) return;
 
-    updateSpend(spend);
+    purchaseUsingPointsMutation.mutate(
+      {
+        points: Number(spend),
+        userTelegramId: Number(userTelegramId || customUserTelegramId),
+      },
+      {
+        onSuccess(data, variables, context) {
+          updatePurchased(true);
+          // Allow the user to proceed to the next move after purchasing
+          // const possibleMoves = [0, 1, 2].filter((move) => move !== selected);
+          // const randomMove =
+          //   possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+          // setBotSelected(randomMove);
+          // const result = setRPSResult({
+          //   userMove: selected,
+          //   botMove: randomMove,
+          //   spend,
+          // });
+          // console.log({ result });
+          // addMove(selected, true);
+          // addMove(randomMove, false);
+        },
+        onError(error) {
+          updatePurchased(false);
+          console.error("Error during bet processing:", error);
+          alert(
+            "An error occurred while processing your bet. Please try again."
+          );
+        },
+      }
+    );
+  };
+
+  const handleMove = () => {
+    console.log({ selected, spend });
+    if (selected === null || selected === undefined || !purchased) return;
+
     const possibleMoves = [0, 1, 2].filter((move) => move !== selected);
     const randomMove =
       possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
@@ -68,6 +118,28 @@ const RockPaperScissors = () => {
     addMove(randomMove, false);
   };
 
+  console.log({ currentRPSResult });
+
+  useEffect(() => {
+    // if (gameCount >= 3) {
+    if (currentRPSResult?.outcome && currentRPSResult.outcome > 0) {
+      claimRewardsMutation.mutate({
+        points: Number(currentRPSResult.outcome),
+        userTelegramId: Number(userTelegramId || customUserTelegramId),
+      });
+    }
+
+    setDisplayWining(true);
+    setTimeout(() => {
+      setDisplayWining(false);
+      setSelected(null);
+      setBotSelected(null);
+      setSpend(MIN_SPEND);
+      updatePurchased(false);
+    }, 5000);
+    // }
+  }, [currentRPSResult]);
+
   return (
     <div className="h-full w-full relative overflow-y-auto overflow-x-hidden px-[19px] py-[20px]">
       <h1 className="text-[32px] font-[600] text-center">
@@ -79,7 +151,15 @@ const RockPaperScissors = () => {
         <div className="w-full flex justify-between items-center">
           <div className="flex flex-col items-center">
             <p className="text-[12px]">Your move</p>
-            <p className="text-[10px] opacity-60">Rock</p>
+            <p className="text-[10px] opacity-60">
+              {selected === null
+                ? "Rock"
+                : selected === 0
+                ? "Rock"
+                : selected === 1
+                ? "Paper"
+                : "Scissors"}
+            </p>
             {selected === null && (
               <img
                 className="rotate-[40deg] w-[46px]"
@@ -135,7 +215,16 @@ const RockPaperScissors = () => {
 
           <div className="flex flex-col items-center">
             <p className="text-[12px]">Opponent</p>
-            <p className="text-[10px] opacity-60">Scissors</p>
+            <p className="text-[10px] opacity-60">
+              {" "}
+              {botSelected === null
+                ? "Rock"
+                : botSelected === 0
+                ? "Rock"
+                : botSelected === 1
+                ? "Paper"
+                : "Scissors"}
+            </p>
             {botSelected === null && (
               <img
                 style={{ transform: "rotateY(180deg) rotate(90deg)" }}
@@ -172,7 +261,7 @@ const RockPaperScissors = () => {
         </div>
 
         <div className="w-full mt-[20px]">
-          {true ? (
+          {!displayWining ? (
             <>
               {/* Select Choice */}
               <div className="w-full">
@@ -219,23 +308,26 @@ const RockPaperScissors = () => {
                 spend={spend}
                 minSpend={MIN_SPEND}
                 onChange={(newSpend) => setSpend(newSpend)}
+                disabled={purchased}
               />
 
               <button
                 className={`${
                   selected == null ? "bg-[#534949]" : "bg-red"
                 } mt-[10px] w-full h-[43px] rounded-[8px] font-[600]`}
-                onClick={handleMove}
+                onClick={purchased ? handleMove : handlePurchase}
               >
                 {selected == null
                   ? "Select Move"
-                  : `Go (Round ${gameCount + 1}/3)`}
+                  : purchased
+                  ? `Go (Round ${gameCount + 1}/3)`
+                  : "Buy Ticket"}
               </button>
             </>
           ) : (
             <div
               className={`${
-                true ? "border-[#056F3D]" : "border-red"
+                currentRPSResult?.isWon ? "border-[#056F3D]" : "border-red"
               } w-full h-[155px] border-[3px] rounded-[8px] flex flex-col items-center justify-center`}
             >
               <div className="dots mb-[5px] flex gap-[3px]">
@@ -244,9 +336,11 @@ const RockPaperScissors = () => {
                 <div className="size-[5px] bg-white rounded-full opacity-60" />
               </div>
               <p className="font-[600] leading-[1.1]">
-                You {true ? "Won" : "Lost"}
+                You {currentRPSResult?.isWon ? "Won" : "Lost"}
               </p>
-              <p className="font-[600] text-[10px] opacity-60">300$REDBIRD</p>
+              <p className="font-[600] text-[10px] opacity-60">
+                {formatNumber(currentRPSResult?.outcome || 0)} $REDBIRD
+              </p>
             </div>
           )}
         </div>
