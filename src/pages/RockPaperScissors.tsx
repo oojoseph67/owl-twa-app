@@ -28,14 +28,10 @@ const RockPaperScissors = () => {
   const { userData } = userQueryData || {};
   const { points: userPoints } = userData || {};
 
-  console.log({ userPoints });
-
   const [spend, setSpend] = useState<number>(MIN_SPEND);
   const [selected, setSelected] = useState<number | null>(null);
   const [botSelected, setBotSelected] = useState<number | null>(null);
   const [displayWining, setDisplayWining] = useState(false);
-  // const [result, setResult] = useState<RPSResultType | null>();
-  // const [purchased, setPurchased] = useState(false);
 
   const {
     userMoves,
@@ -48,21 +44,11 @@ const RockPaperScissors = () => {
     currentRPSResult,
     purchased,
     updatePurchased,
-    updateSpend,
+    setCurrentRPSResult,
     setRPSResult,
     addMove,
   } = useOwlTWAStore();
   const reversedResults = rpsResults.slice().reverse().slice(0, 10);
-  // const currentResult = reversedResults[0];
-
-  console.log({ userMoves });
-  console.log({ botMoves });
-  console.log({ botScores });
-  console.log({ userScores });
-  console.log({ gameCount });
-  console.log({ purchased });
-  console.log({ spend: spendStore });
-  console.log({ rpsResults });
 
   const handlePurchase = () => {
     if (selected === null || selected === undefined || !spend) return;
@@ -75,19 +61,6 @@ const RockPaperScissors = () => {
       {
         onSuccess(data, variables, context) {
           updatePurchased(true);
-          // Allow the user to proceed to the next move after purchasing
-          // const possibleMoves = [0, 1, 2].filter((move) => move !== selected);
-          // const randomMove =
-          //   possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-          // setBotSelected(randomMove);
-          // const result = setRPSResult({
-          //   userMove: selected,
-          //   botMove: randomMove,
-          //   spend,
-          // });
-          // console.log({ result });
-          // addMove(selected, true);
-          // addMove(randomMove, false);
         },
         onError(error) {
           updatePurchased(false);
@@ -100,13 +73,20 @@ const RockPaperScissors = () => {
     );
   };
 
+  const generateBotMove = () => {
+    return Math.floor(Math.random() * 3);
+  };
+
   const handleMove = () => {
     console.log({ selected, spend });
     if (selected === null || selected === undefined || !purchased) return;
 
-    const possibleMoves = [0, 1, 2].filter((move) => move !== selected);
-    const randomMove =
-      possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    // const possibleMoves = [0, 1, 2].filter((move) => move !== selected);
+    // const randomMove =
+    //   possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+
+    const randomMove = generateBotMove();
+
     setBotSelected(randomMove);
     const result = setRPSResult({
       userMove: selected,
@@ -118,10 +98,7 @@ const RockPaperScissors = () => {
     addMove(randomMove, false);
   };
 
-  console.log({ currentRPSResult });
-
   useEffect(() => {
-    // if (gameCount >= 3) {
     if (currentRPSResult?.outcome && currentRPSResult.outcome > 0) {
       claimRewardsMutation.mutate({
         points: Number(currentRPSResult.outcome),
@@ -136,8 +113,8 @@ const RockPaperScissors = () => {
       setBotSelected(null);
       setSpend(MIN_SPEND);
       updatePurchased(false);
+      setCurrentRPSResult();
     }, 5000);
-    // }
   }, [currentRPSResult]);
 
   return (
@@ -354,7 +331,6 @@ const RockPaperScissors = () => {
             <div>No results available.</div>
           ) : (
             reversedResults.map((result, index) => {
-              console.log({ result });
               return (
                 <RPSResult
                   key={index}

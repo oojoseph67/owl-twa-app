@@ -27,6 +27,7 @@ interface OwlTWAStore {
   spend: number;
   currentRPSResult: RPSResult | null;
   purchased: boolean;
+  setCurrentRPSResult: () => void;
   updatePurchased: (purchased: boolean) => void;
   updateSpend: (spend: number) => void;
   addPoints: (points: number) => void;
@@ -88,6 +89,11 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
   spend: 0,
   currentRPSResult: null,
   purchased: false,
+  setCurrentRPSResult() {
+    set((state) => {
+      return { currentRPSResult: null };
+    });
+  },
   updatePurchased(purchased: boolean) {
     set((state) => {
       return { purchased };
@@ -139,12 +145,6 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
           status: win ? "won" : "lost",
         } || null
       );
-      //   return {
-      //     ...state,
-      //     selectedBet,
-      //     outcome,
-      //     winStatus: win ? "win" : "lose",
-      //   };
     }
 
     return null;
@@ -235,11 +235,10 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
         state.resetRPS();
         state.resetMove();
       } else if (state.gameCount >= 3) {
+        console.log("setting state");
         state.addRPSResult();
         state.resetRPS();
         state.resetMove();
-
-        return state;
       }
 
       return isUserMove ? { userMoves: newMoves } : { botMoves: newMoves };

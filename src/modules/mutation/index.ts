@@ -82,7 +82,6 @@ export function useClaimRewardsMutation() {
       points: number;
       userTelegramId: number;
     }) => {
-      console.log({ points, userTelegramId });
       try {
         const response = await axios.post(
           `${BACKEND_URL}/rewards/update-reward`,
