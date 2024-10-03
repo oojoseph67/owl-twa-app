@@ -1,13 +1,81 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import bird from "../assets/bird2.png";
 import HeadorTailResult from "../components/HoT-Result";
 import Slider from "../components/Slider";
+import { useGetUserQuery } from "../modules/query";
+import { customUserTelegramId } from "../utils/config";
+import { useTelegramContext } from "../context/TelegramContext";
+import useOwlTWAStore, { Result } from "../utils/store";
+import {
+  useClaimRewardsMutation,
+  usePurchaseUsingPointsMutation,
+} from "../modules/mutation";
+import { formatNumber } from "../utils";
 
 const MIN_SPEND = 100;
 
 const HeadorTail = () => {
-  const [balance, setBalance] = useState<number>(2142);
+  const { userTelegramId } = useTelegramContext();
+
+  const purchaseUsingPointsMutation = usePurchaseUsingPointsMutation();
+  const claimRewardsMutation = useClaimRewardsMutation();
+  const { data: userQueryData } = useGetUserQuery({
+    userTelegramId: customUserTelegramId,
+  });
+
+  const { userData } = userQueryData || {};
+  const { points: userPoints } = userData || {};
+  const { hotResults, addHOTResult, setHeadOrTailResult } = useOwlTWAStore();
+  const reversedResults = hotResults.slice().reverse().slice(0, 10);
+
   const [spend, setSpend] = useState<number>(MIN_SPEND);
+  const [selectedBet, setSelectedBet] = useState<string | null>("Head");
+  const [result, setResult] = useState<Result | null>();
+  const [displayWining, setDisplayWining] = useState(false);
+
+  const handleBet = () => {
+    if (!selectedBet || !spend) return;
+
+    purchaseUsingPointsMutation.mutate(
+      {
+        points: Number(spend),
+        userTelegramId: Number(userTelegramId || customUserTelegramId),
+      },
+      {
+        onSuccess(data, variables, context) {
+          const headOrTailResult = setHeadOrTailResult({ selectedBet, spend });
+
+          const results = {
+            bet: selectedBet,
+            spend,
+            outcome: headOrTailResult?.outcome,
+            status: headOrTailResult?.status,
+          };
+          addHOTResult(results);
+
+          if (headOrTailResult?.status === "won") {
+            claimRewardsMutation.mutate({
+              points: Number(headOrTailResult.outcome),
+              userTelegramId: Number(userTelegramId || customUserTelegramId),
+            });
+          }
+
+          setDisplayWining(true);
+          setResult(headOrTailResult as Result | null);
+          setTimeout(() => {
+            setDisplayWining(false);
+            setResult(null);
+          }, 5000);
+        },
+        onError(error) {
+          console.error("Error during bet processing:", error);
+          alert(
+            "An error occurred while processing your bet. Please try again."
+          );
+        },
+      }
+    );
+  };
 
   return (
     <div className="h-full w-full relative overflow-y-auto overflow-x-hidden px-[19px] py-[20px]">
@@ -17,33 +85,51 @@ const HeadorTail = () => {
         <img className="h-[139px]" src={bird} alt="bird" />
 
         <div className="w-full mt-[20px]">
-          {true ? (
+          {!displayWining ? (
             <>
               <div className="w-full flex justify-between gap-[10px]">
-                <button className="w-[50%] h-[43px] bg-[#001E4B] rounded-[8px] font-[600]">
+                <button
+                  className={`w-[50%] h-[43px] rounded-[8px] font-[600] ${
+                    selectedBet === "Head" ? "bg-[#001E4B]" : "bg-gray-500"
+                  }`}
+                  onClick={() => setSelectedBet("Head")}
+                >
                   Head
                 </button>
-                <button className="w-[50%] h-[43px] bg-red rounded-[8px] font-[600]">
+                <button
+                  className={`w-[50%] h-[43px] rounded-[8px] font-[600] ${
+                    selectedBet === "Tail" ? "bg-red" : "bg-gray-500"
+                  }`}
+                  onClick={() => setSelectedBet("Tail")}
+                >
                   Tail
                 </button>
               </div>
 
               {/* Use the reusable Slider component */}
               <Slider
-                balance={balance}
+                balance={userPoints || 0}
                 spend={spend}
                 minSpend={MIN_SPEND}
                 onChange={(newSpend) => setSpend(newSpend)}
               />
 
-              <button className="mt-[10px] w-full h-[43px] bg-red rounded-[8px] font-[600]">
-                {false ? "Flip" : "Head or Tail"}
+              <button
+                className="mt-[10px] w-full h-[43px] bg-red rounded-[8px] font-[600]"
+                onClick={handleBet}
+                disabled={
+                  spend > userPoints || !selectedBet || !spend || !userPoints
+                }
+              >
+                {"Head or Tail"}
               </button>
             </>
           ) : (
             <div
               className={`${
-                true ? "border-[#056F3D]" : "border-red"
+                result?.status.toLowerCase() === "won"
+                  ? "border-[#056F3D]"
+                  : "border-red"
               } w-full h-[155px] border-[3px] rounded-[8px] flex flex-col items-center justify-center`}
             >
               <div className="dots mb-[5px] flex gap-[3px]">
@@ -52,9 +138,11 @@ const HeadorTail = () => {
                 <div className="size-[5px] bg-white rounded-full opacity-60" />
               </div>
               <p className="font-[600] leading-[1.1]">
-                You {true ? "Won" : "Lost"}
+                You {result?.status.toLowerCase() === "won" ? "Won" : "Lost"}
               </p>
-              <p className="font-[600] text-[10px] opacity-60">300$REDBIRD</p>
+              <p className="font-[600] text-[10px] opacity-60">
+                {formatNumber(result?.outcome || 0)} $REDBIRD
+              </p>
             </div>
           )}
         </div>
@@ -64,20 +152,24 @@ const HeadorTail = () => {
         <p className="font-[500] opacity-60">Results</p>
 
         <div className="mt-[5px] space-y-[3px]">
-          <HeadorTailResult
-            i="1"
-            take="Tail"
-            spend={150}
-            outcome={300}
-            isWon={true}
-          />
-          <HeadorTailResult
-            i="2"
-            take="Head"
-            spend={500}
-            outcome={500}
-            isWon={false}
-          />
+          {reversedResults.length === 0 ? (
+            <div>No results available.</div>
+          ) : (
+            reversedResults.map((result, index) => {
+              if (result.bet === null) return;
+              return (
+                <HeadorTailResult
+                  key={index}
+                  i={index + 1}
+                  take={result.bet}
+                  spend={result.spend}
+                  outcome={result.outcome}
+                  status={result.status}
+                  isWon={result.status.toLowerCase() === "won" ? true : false}
+                />
+              );
+            })
+          )}
         </div>
       </div>
     </div>

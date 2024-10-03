@@ -7,8 +7,48 @@ import leaf from "../assets/leaf icon.png";
 import bot from "../assets/chatbot.png";
 import star from "../assets/glossy star.png";
 import { Link } from "react-router-dom";
+import { useTelegramContext } from "../context/TelegramContext";
+import { useGetUserQuery } from "../modules/query";
+import { useEffect } from "react";
+import { useRegisterUserMutation } from "../modules/mutation";
+import { customUserTelegramId } from "../utils/config";
+import { formatNumber } from "../utils";
 
 const Home = () => {
+  const registerUserMutation = useRegisterUserMutation();
+  const { userTelegramId, userPhoto, firstName } = useTelegramContext();
+
+  const { data: userQueryData } = useGetUserQuery({
+    userTelegramId: customUserTelegramId,
+  });
+
+  const { userData } = userQueryData || {};
+
+  useEffect(() => {
+    if (userQueryData) {
+      if (userQueryData.status === 404 || !userQueryData) {
+        const searchParams = new URLSearchParams(location.search);
+        const refCode = searchParams.get("startapp");
+
+        registerUserMutation.mutate({
+          username: firstName || "Joseph",
+          userTelegramId: Number(userTelegramId || customUserTelegramId),
+          refTelegramId: Number(refCode),
+          profilePicture: userPhoto!,
+        });
+      } else {
+        console.log("User already registered");
+      }
+    }
+  }, [
+    userQueryData,
+    location,
+    firstName,
+    userTelegramId,
+    customUserTelegramId,
+    userPhoto,
+  ]);
+
   return (
     <div className="h-full w-full relative overflow-y-auto overflow-x-hidden px-[19px]">
       <img className="absolute top-0 left-0 w-full" src={bigbird} alt="Red" />
@@ -16,7 +56,8 @@ const Home = () => {
       <div className="relative mt-[160px] bg-[#242628] w-full h-[114px] rounded-[16px] px-[10px] py-[10px] font-Inter flex flex-col justify-between">
         <div className="flex justify-between items-center">
           <p className="font-[600] text-[16px]">
-            2,436 <span className="text-[10px] opacity-60">$REDBIRD</span>
+            {formatNumber(userData.points || 0)}{" "}
+            <span className="text-[10px] opacity-60">$REDBIRD</span>
           </p>
           <img className="w-[41px]" src={bird} alt="bird" />
         </div>

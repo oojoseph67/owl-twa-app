@@ -2,15 +2,34 @@ import bird from "../assets/bird.png";
 import first from "../assets/first.png";
 import second from "../assets/second.png";
 import third from "../assets/third.png";
+import { UserInterface } from "../modules/query";
+import { formatNumber } from "../utils";
 
-const Rank = ({ position }: { position: number }) => {
+const Rank = ({
+  position,
+  userTelegramId,
+  leaderboard,
+}: {
+  position: number;
+  userTelegramId: number | string;
+  leaderboard: UserInterface;
+}) => {
   return (
     <div className="rank">
       <img className="w-[29.75px]" src={bird} alt="media" />
       <span>
-        <h6>Lemmyux</h6>
+        <h6>
+          {leaderboard.username}{" "}
+          {Number(leaderboard.telegramId) === Number(userTelegramId) ? (
+            <span className="text-sm opacity-60">You</span>
+          ) : (
+            " "
+          )}
+        </h6>
         <p>
-          <span className="opacity-60">66,235,834</span> $REDBIRD
+          <span className="opacity-60">
+            {formatNumber(leaderboard.points)} $REDBIRD
+          </span>
         </p>
       </span>
       {position < 4 ? (

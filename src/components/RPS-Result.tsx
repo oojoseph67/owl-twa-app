@@ -1,16 +1,15 @@
 import React from "react";
+import { formatNumber } from "../utils";
 
 const RPSResult = ({
   i,
-
   userScore,
   botScore,
   spend,
   isWon,
   outcome,
 }: {
-  i: number | string;
-
+  i: number;
   userScore: number;
   botScore: number;
   spend: number;
@@ -32,7 +31,7 @@ const RPSResult = ({
           <p className="text-[10px] font-[500] opacity-60 leading-[1.0]">
             Spent
           </p>
-          <p className="text-[10px] font-[600]">{spend}</p>
+          <p className="text-[10px] font-[600]">{formatNumber(spend)}</p>
         </span>
         <span className="flex flex-col items-center">
           <p
@@ -42,7 +41,7 @@ const RPSResult = ({
           >
             {isWon ? "Won" : "Lost"}
           </p>
-          <p className="text-[10px] font-[600]">{outcome}</p>
+          <p className="text-[10px] font-[600]">{formatNumber(outcome)}</p>
         </span>
       </div>
     </div>
