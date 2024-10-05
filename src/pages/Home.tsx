@@ -30,8 +30,6 @@ const Home = () => {
         const searchParams = new URLSearchParams(location.search);
         const refCode = searchParams.get("startapp");
 
-        console.log("registering user");
-
         registerUserMutation.mutate({
           username: firstName || "Joseph",
           userTelegramId: Number(userTelegramId || customUserTelegramId),
@@ -58,7 +56,7 @@ const Home = () => {
       <div className="relative mt-[160px] bg-[#242628] w-full h-[114px] rounded-[16px] px-[10px] py-[10px] font-Inter flex flex-col justify-between">
         <div className="flex justify-between items-center">
           <p className="font-[600] text-[16px]">
-            {formatNumber(userData.points || 0)}{" "}
+            {formatNumber(userData?.points || 0)}{" "}
             <span className="text-[10px] opacity-60">$REDBIRD</span>
           </p>
           <img className="w-[41px]" src={bird} alt="bird" />

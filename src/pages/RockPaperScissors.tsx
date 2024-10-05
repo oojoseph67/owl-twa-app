@@ -1,17 +1,121 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Slider from "../components/Slider";
 import RPSResult from "../components/RPS-Result";
 import paperImg from "../assets/paper.png";
 import rockImg from "../assets/rock.png";
 import scissorsImg from "../assets/scissors.png";
+import useOwlTWAStore, { RPSResult as RPSResultType } from "../utils/store";
+import { useGetUserQuery } from "../modules/query";
+import { customUserTelegramId } from "../utils/config";
+import { useTelegramContext } from "../context/TelegramContext";
+import {
+  useClaimRewardsMutation,
+  usePurchaseUsingPointsMutation,
+} from "../modules/mutation";
+import { formatNumber } from "../utils";
 
 const MIN_SPEND = 100;
 
 const RockPaperScissors = () => {
-  const [balance, setBalance] = useState<number>(2142);
-  const [spend, setSpend] = useState<number>(MIN_SPEND);
+  const { userTelegramId } = useTelegramContext();
 
+  const purchaseUsingPointsMutation = usePurchaseUsingPointsMutation();
+  const claimRewardsMutation = useClaimRewardsMutation();
+  const { data: userQueryData } = useGetUserQuery({
+    userTelegramId: customUserTelegramId,
+  });
+
+  const { userData } = userQueryData || {};
+  const { points: userPoints } = userData || {};
+
+  const [spend, setSpend] = useState<number>(MIN_SPEND);
   const [selected, setSelected] = useState<number | null>(null);
+  const [botSelected, setBotSelected] = useState<number | null>(null);
+  const [displayWining, setDisplayWining] = useState(false);
+
+  const {
+    userMoves,
+    botMoves,
+    botScores,
+    userScores,
+    spend: spendStore,
+    rpsResults,
+    gameCount,
+    currentRPSResult,
+    purchased,
+    updatePurchased,
+    setCurrentRPSResult,
+    setRPSResult,
+    addMove,
+  } = useOwlTWAStore();
+  const reversedResults = rpsResults.slice().reverse().slice(0, 10);
+
+  const handlePurchase = () => {
+    if (selected === null || selected === undefined || !spend) return;
+
+    purchaseUsingPointsMutation.mutate(
+      {
+        points: Number(spend),
+        userTelegramId: Number(userTelegramId || customUserTelegramId),
+      },
+      {
+        onSuccess(data, variables, context) {
+          updatePurchased(true);
+        },
+        onError(error) {
+          updatePurchased(false);
+          console.error("Error during bet processing:", error);
+          alert(
+            "An error occurred while processing your bet. Please try again."
+          );
+        },
+      }
+    );
+  };
+
+  const generateBotMove = () => {
+    return Math.floor(Math.random() * 3);
+  };
+
+  const handleMove = () => {
+    console.log({ selected, spend });
+    if (selected === null || selected === undefined || !purchased) return;
+
+    // const possibleMoves = [0, 1, 2].filter((move) => move !== selected);
+    // const randomMove =
+    //   possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+
+    const randomMove = generateBotMove();
+
+    setBotSelected(randomMove);
+    const result = setRPSResult({
+      userMove: selected,
+      botMove: randomMove,
+      spend,
+    });
+    console.log({ result });
+    addMove(selected, true);
+    addMove(randomMove, false);
+  };
+
+  useEffect(() => {
+    if (currentRPSResult?.outcome && currentRPSResult.outcome > 0) {
+      claimRewardsMutation.mutate({
+        points: Number(currentRPSResult.outcome),
+        userTelegramId: Number(userTelegramId || customUserTelegramId),
+      });
+    }
+
+    setDisplayWining(true);
+    setTimeout(() => {
+      setDisplayWining(false);
+      setSelected(null);
+      setBotSelected(null);
+      setSpend(MIN_SPEND);
+      updatePurchased(false);
+      setCurrentRPSResult();
+    }, 5000);
+  }, [currentRPSResult]);
 
   return (
     <div className="h-full w-full relative overflow-y-auto overflow-x-hidden px-[19px] py-[20px]">
@@ -24,8 +128,43 @@ const RockPaperScissors = () => {
         <div className="w-full flex justify-between items-center">
           <div className="flex flex-col items-center">
             <p className="text-[12px]">Your move</p>
-            <p className="text-[10px] opacity-60">Rock</p>
-            <img className="rotate-[40deg] w-[46px]" src={rockImg} alt="move" />
+            <p className="text-[10px] opacity-60">
+              {selected === null
+                ? "Rock"
+                : selected === 0
+                ? "Rock"
+                : selected === 1
+                ? "Paper"
+                : "Scissors"}
+            </p>
+            {selected === null && (
+              <img
+                className="rotate-[40deg] w-[46px]"
+                src={rockImg}
+                alt="move"
+              />
+            )}
+            {selected === 0 && (
+              <img
+                className="rotate-[40deg] w-[46px]"
+                src={rockImg}
+                alt="move"
+              />
+            )}
+            {selected === 1 && (
+              <img
+                className="rotate-[40deg] w-[46px]"
+                src={paperImg}
+                alt="move"
+              />
+            )}
+            {selected === 2 && (
+              <img
+                className="rotate-[40deg] w-[46px]"
+                src={scissorsImg}
+                alt="move"
+              />
+            )}
           </div>
 
           <div>
@@ -44,8 +183,8 @@ const RockPaperScissors = () => {
                 <p
                   className={`flex items-center justify-center gap-[3px]  font-[600] text-[12px]`}
                 >
-                  <span className="text-[#FDB3C3]">1</span> -{" "}
-                  <span className="text-[#CD17C1]">0</span>
+                  <span className="text-[#FDB3C3]">{userScores}</span> -{" "}
+                  <span className="text-[#CD17C1]">{botScores}</span>
                 </p>
               </div>
             )}
@@ -53,18 +192,53 @@ const RockPaperScissors = () => {
 
           <div className="flex flex-col items-center">
             <p className="text-[12px]">Opponent</p>
-            <p className="text-[10px] opacity-60">Scissors</p>
-            <img
-              style={{ transform: "rotateY(180deg) rotate(90deg)" }}
-              className="rotate-[-90deg] h-[46px]"
-              src={scissorsImg}
-              alt="move"
-            />
+            <p className="text-[10px] opacity-60">
+              {" "}
+              {botSelected === null
+                ? "Rock"
+                : botSelected === 0
+                ? "Rock"
+                : botSelected === 1
+                ? "Paper"
+                : "Scissors"}
+            </p>
+            {botSelected === null && (
+              <img
+                style={{ transform: "rotateY(180deg) rotate(90deg)" }}
+                className="rotate-[-90deg] h-[46px]"
+                src={rockImg}
+                alt="move"
+              />
+            )}
+            {botSelected === 0 && (
+              <img
+                style={{ transform: "rotateY(180deg) rotate(90deg)" }}
+                className="rotate-[-90deg] h-[46px]"
+                src={rockImg}
+                alt="move"
+              />
+            )}
+            {botSelected === 1 && (
+              <img
+                style={{ transform: "rotateY(180deg) rotate(90deg)" }}
+                className="rotate-[-90deg] h-[46px]"
+                src={paperImg}
+                alt="move"
+              />
+            )}
+            {botSelected === 2 && (
+              <img
+                style={{ transform: "rotateY(180deg) rotate(90deg)" }}
+                className="rotate-[-90deg] h-[46px]"
+                src={scissorsImg}
+                alt="move"
+              />
+            )}
           </div>
         </div>
 
         <div className="w-full mt-[20px]">
-          {true ? (
+          {!displayWining ? (
             <>
               {/* Select Choice */}
               <div className="w-full">
@@ -107,24 +281,30 @@ const RockPaperScissors = () => {
               </div>
 
               <Slider
-                balance={balance}
+                balance={userPoints || 100_000}
                 spend={spend}
                 minSpend={MIN_SPEND}
                 onChange={(newSpend) => setSpend(newSpend)}
+                disabled={purchased}
               />
 
               <button
                 className={`${
                   selected == null ? "bg-[#534949]" : "bg-red"
                 } mt-[10px] w-full h-[43px] rounded-[8px] font-[600]`}
+                onClick={purchased ? handleMove : handlePurchase}
               >
-                {selected == null ? "Select Move" : "Go (Round 1/3)"}
+                {selected == null
+                  ? "Select Move"
+                  : purchased
+                  ? `Go (Round ${gameCount + 1}/3)`
+                  : "Buy Ticket"}
               </button>
             </>
           ) : (
             <div
               className={`${
-                true ? "border-[#056F3D]" : "border-red"
+                currentRPSResult?.isWon ? "border-[#056F3D]" : "border-red"
               } w-full h-[155px] border-[3px] rounded-[8px] flex flex-col items-center justify-center`}
             >
               <div className="dots mb-[5px] flex gap-[3px]">
@@ -133,9 +313,11 @@ const RockPaperScissors = () => {
                 <div className="size-[5px] bg-white rounded-full opacity-60" />
               </div>
               <p className="font-[600] leading-[1.1]">
-                You {true ? "Won" : "Lost"}
+                You {currentRPSResult?.isWon ? "Won" : "Lost"}
               </p>
-              <p className="font-[600] text-[10px] opacity-60">300$REDBIRD</p>
+              <p className="font-[600] text-[10px] opacity-60">
+                {formatNumber(currentRPSResult?.outcome || 0)} $REDBIRD
+              </p>
             </div>
           )}
         </div>
@@ -145,22 +327,23 @@ const RockPaperScissors = () => {
         <p className="font-[500] opacity-60">Results</p>
 
         <div className="mt-[5px] space-y-[3px]">
-          <RPSResult
-            i="1"
-            userScore={2}
-            botScore={1}
-            spend={150}
-            outcome={300}
-            isWon={true}
-          />
-          <RPSResult
-            i="2"
-            userScore={0}
-            botScore={2}
-            spend={500}
-            outcome={500}
-            isWon={false}
-          />
+          {reversedResults.length === 0 ? (
+            <div>No results available.</div>
+          ) : (
+            reversedResults.map((result, index) => {
+              return (
+                <RPSResult
+                  key={index}
+                  i={index + 1}
+                  userScore={result.userScore}
+                  botScore={result.botScore}
+                  spend={result.spend}
+                  outcome={result.outcome || 0}
+                  isWon={result.isWon}
+                />
+              );
+            })
+          )}
         </div>
       </div>
     </div>

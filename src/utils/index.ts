@@ -14,6 +14,6 @@ export function formatNumber(num: number | string): string {
   } else if (absNum >= 1000) {
     return (Number(num) / 1000).toFixed(3) + "K";
   } else {
-    return num.toString();
+    return Number(num).toFixed(3);
   }
 }
