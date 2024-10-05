@@ -104,6 +104,39 @@ export function useClaimRewardsMutation() {
   });
 }
 
+export function useAddWalletAddressMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      userTelegramId,
+      walletAddress,
+    }: {
+      userTelegramId: number;
+      walletAddress: string;
+    }) => {
+      try {
+        const response = await axios.post(
+          `${BACKEND_URL}/auth/add-wallet-address`,
+          {
+            telegramId: userTelegramId,
+            walletAddress,
+          }
+        );
+        return response.data;
+      } catch (error) {
+        // console.log(error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["user"],
+      });
+    },
+  });
+}
+
 // syntax
 export function useMutationExample() {
   // call needed functions
