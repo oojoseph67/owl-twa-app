@@ -57,13 +57,15 @@ export function useGetLeaderboardQuery() {
     queryFn: async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/user/leaderboard`);
+        // console.log({ response });
         return response.data as UserInterface[];
       } catch (error) {
+        // console.log({ error });
         throw error;
       }
     },
     enabled: true,
-    refetchInterval: 60000,
+    refetchInterval: 5000,
   });
 }
 
@@ -86,7 +88,7 @@ export function useGetUserReferralQuery({
       }
     },
     enabled: !!userTelegramId,
-    refetchInterval: 60000,
+    refetchInterval: 5000,
   });
 }
 

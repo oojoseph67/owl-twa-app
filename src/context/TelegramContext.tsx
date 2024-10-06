@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { customUserTelegramId } from "../utils/config";
 
 declare global {
   interface Window {
@@ -89,7 +90,9 @@ export const TelegramProvider: React.FC<{ children: React.ReactNode }> = ({
         userPhoto,
         setFirstName,
         handleClose,
-        userTelegramId,
+        userTelegramId: userTelegramId
+          ? userTelegramId
+          : customUserTelegramId.toString(),
       }}
     >
       {children}

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { TaskList } from "..";
 
 export type Result = {
   bet: "Head" | "Tail";
@@ -27,6 +28,10 @@ interface OwlTWAStore {
   spend: number;
   currentRPSResult: RPSResult | null;
   purchased: boolean;
+  claimedTasks: string[];
+  collaborationTasks: string[];
+  claimTask: (taskId: string) => void;
+  collaborationTask: (taskId: string) => void;
   setCurrentRPSResult: () => void;
   updatePurchased: (purchased: boolean) => void;
   updateSpend: (spend: number) => void;
@@ -58,21 +63,35 @@ const loadState = () => {
   const points = parseInt(localStorage.getItem("points") || "0");
   const hotResults = JSON.parse(localStorage.getItem("hotResults") || "[]");
   const rpsResults = JSON.parse(localStorage.getItem("rpsResultsV3") || "[]");
-  return { points, hotResults, rpsResults };
+  const claimedTasks = JSON.parse(localStorage.getItem("claimedTasks") || "[]");
+  const collaborationTasks = JSON.parse(
+    localStorage.getItem("claimedTasks") || "[]"
+  );
+
+  return { points, hotResults, rpsResults, claimedTasks, collaborationTasks };
 };
 
 const saveState = ({
   points,
   hotResults,
   rpsResults,
+  claimedTasks,
+  collaborationTasks,
 }: {
   points: number;
   hotResults: Result[];
   rpsResults: RPSResult[];
+  claimedTasks: string[];
+  collaborationTasks: string[];
 }) => {
   localStorage.setItem("points", points.toString());
   localStorage.setItem("hotResults", JSON.stringify(hotResults));
   localStorage.setItem("rpsResultsV3", JSON.stringify(rpsResults));
+  localStorage.setItem("claimedTasks", JSON.stringify(claimedTasks));
+  localStorage.setItem(
+    "collaborationTasks",
+    JSON.stringify(collaborationTasks)
+  );
 };
 
 const initialState = loadState();
@@ -89,6 +108,8 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
   spend: 0,
   currentRPSResult: null,
   purchased: false,
+  claimedTasks: initialState.claimedTasks,
+  collaborationTasks: initialState.collaborationTasks,
   setCurrentRPSResult() {
     set((state) => {
       return { currentRPSResult: null };
@@ -111,6 +132,8 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
         points: newPoints,
         hotResults: state.hotResults,
         rpsResults: state.rpsResults,
+        claimedTasks: state.claimedTasks,
+        collaborationTasks: state.collaborationTasks,
       });
       return { points: newPoints };
     });
@@ -122,6 +145,8 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
         points: state.points,
         hotResults: newResults,
         rpsResults: state.rpsResults,
+        claimedTasks: state.claimedTasks,
+        collaborationTasks: state.collaborationTasks,
       });
       return { hotResults: newResults };
     });
@@ -170,6 +195,8 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
         points: state.points,
         hotResults: state.hotResults,
         rpsResults: newResults,
+        claimedTasks: state.claimedTasks,
+        collaborationTasks: state.collaborationTasks,
       });
       return { rpsResults: newResults };
     });
@@ -244,6 +271,48 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
       return isUserMove ? { userMoves: newMoves } : { botMoves: newMoves };
     });
   },
+  claimTask: (taskId: string) =>
+    set((state) => {
+      if (state.claimedTasks.includes(taskId)) {
+        return state;
+      }
+
+      const newClaimedTasks = [...state.claimedTasks, taskId];
+
+      const newPoints =
+        Number(state.points) +
+        TaskList.find((task) => task.id === taskId)?.points!;
+
+      saveState({
+        points: state.points,
+        hotResults: state.hotResults,
+        rpsResults: state.rpsResults,
+        claimedTasks: newClaimedTasks,
+        collaborationTasks: state.collaborationTasks,
+      });
+      return { claimedTasks: newClaimedTasks, points: newPoints };
+    }),
+  collaborationTask: (taskId: string) =>
+    set((state) => {
+      if (state.claimedTasks.includes(taskId)) {
+        return state;
+      }
+
+      const newCollaborationTasks = [...state.claimedTasks, taskId];
+
+      const newPoints =
+        Number(state.points) +
+        TaskList.find((task) => task.id === taskId)?.points!;
+
+      saveState({
+        points: state.points,
+        hotResults: state.hotResults,
+        rpsResults: state.rpsResults,
+        claimedTasks: state.claimedTasks,
+        collaborationTasks: newCollaborationTasks,
+      });
+      return { collaborationTasks: newCollaborationTasks, points: newPoints };
+    }),
 }));
 
 export default useOwlTWAStore;

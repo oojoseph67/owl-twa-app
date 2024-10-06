@@ -10,19 +10,39 @@ import { Link } from "react-router-dom";
 import { useTelegramContext } from "../context/TelegramContext";
 import { useGetUserQuery } from "../modules/query";
 import { useEffect } from "react";
-import { useRegisterUserMutation } from "../modules/mutation";
-import { customUserTelegramId } from "../utils/config";
-import { formatNumber } from "../utils";
+import {
+  useAddWalletAddressMutation,
+  useRegisterUserMutation,
+} from "../modules/mutation";
+import { formatNumber, getFormatAddress } from "../utils";
+import { useIsConnectionRestored, useTonConnectUI } from "@tonconnect/ui-react";
 
 const Home = () => {
+  const addWalletAddressMutation = useAddWalletAddressMutation();
   const registerUserMutation = useRegisterUserMutation();
   const { userTelegramId, userPhoto, firstName } = useTelegramContext();
 
   const { data: userQueryData } = useGetUserQuery({
-    userTelegramId: customUserTelegramId,
+    userTelegramId,
   });
 
   const { userData } = userQueryData || {};
+
+  const [tonConnectUI] = useTonConnectUI();
+  const connectionRestored = useIsConnectionRestored();
+
+  const account = tonConnectUI.account;
+
+  useEffect(() => {
+    if (userData && !userData.walletAddress) {
+      if (account && userTelegramId) {
+        addWalletAddressMutation.mutate({
+          userTelegramId: Number(userTelegramId),
+          walletAddress: account.address,
+        });
+      }
+    }
+  }, [account, userTelegramId, userData]);
 
   useEffect(() => {
     if (userQueryData) {
@@ -32,7 +52,7 @@ const Home = () => {
 
         registerUserMutation.mutate({
           username: firstName || "Joseph",
-          userTelegramId: Number(userTelegramId || customUserTelegramId),
+          userTelegramId: Number(userTelegramId),
           refTelegramId: Number(refCode),
           profilePicture: userPhoto!,
         });
@@ -40,14 +60,11 @@ const Home = () => {
         console.log("User already registered");
       }
     }
-  }, [
-    userQueryData,
-    location,
-    firstName,
-    userTelegramId,
-    customUserTelegramId,
-    userPhoto,
-  ]);
+  }, [userQueryData, location, firstName, userTelegramId, userPhoto]);
+
+  const handleOpen = () => {
+    tonConnectUI.connectWallet();
+  };
 
   return (
     <div className="h-full w-full relative overflow-y-auto overflow-x-hidden px-[19px]">
@@ -61,9 +78,26 @@ const Home = () => {
           </p>
           <img className="w-[41px]" src={bird} alt="bird" />
         </div>
-        <button className="bg-red w-full h-[43px] rounded-[8px] flex items-center gap-[10px] justify-center">
+
+        <button
+          disabled={connectionRestored ? false : true}
+          onClick={handleOpen}
+          className="bg-red w-full h-[43px] rounded-[8px] flex items-center gap-[10px] justify-center"
+        >
           <img src={tonIcon} alt="ton" />
-          <p className="font-[600]">Connect wallet</p>
+          {connectionRestored ? (
+            <>
+              {account?.address ? (
+                <p className="font-[600]">
+                  Connected {getFormatAddress(account.address)}
+                </p>
+              ) : (
+                <p className="font-[600]">Connect TON Wallet</p>
+              )}
+            </>
+          ) : (
+            <div className="border-l border-white size-[20px] rounded-full animate-spin" />
+          )}
         </button>
       </div>
 

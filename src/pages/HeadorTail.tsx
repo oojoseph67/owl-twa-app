@@ -3,7 +3,6 @@ import bird from "../assets/bird2.png";
 import HeadorTailResult from "../components/HoT-Result";
 import Slider from "../components/Slider";
 import { useGetUserQuery } from "../modules/query";
-import { customUserTelegramId } from "../utils/config";
 import { useTelegramContext } from "../context/TelegramContext";
 import useOwlTWAStore, { Result } from "../utils/store";
 import {
@@ -20,7 +19,7 @@ const HeadorTail = () => {
   const purchaseUsingPointsMutation = usePurchaseUsingPointsMutation();
   const claimRewardsMutation = useClaimRewardsMutation();
   const { data: userQueryData } = useGetUserQuery({
-    userTelegramId: customUserTelegramId,
+    userTelegramId: userTelegramId,
   });
 
   const { userData } = userQueryData || {};
@@ -39,7 +38,7 @@ const HeadorTail = () => {
     purchaseUsingPointsMutation.mutate(
       {
         points: Number(spend),
-        userTelegramId: Number(userTelegramId || customUserTelegramId),
+        userTelegramId: Number(userTelegramId),
       },
       {
         onSuccess(data, variables, context) {
@@ -56,7 +55,7 @@ const HeadorTail = () => {
           if (headOrTailResult?.status === "won") {
             claimRewardsMutation.mutate({
               points: Number(headOrTailResult.outcome),
-              userTelegramId: Number(userTelegramId || customUserTelegramId),
+              userTelegramId: Number(userTelegramId),
             });
           }
 
@@ -65,6 +64,8 @@ const HeadorTail = () => {
           setTimeout(() => {
             setDisplayWining(false);
             setResult(null);
+            setSpend(MIN_SPEND);
+            setSelectedBet(null);
           }, 5000);
         },
         onError(error) {
