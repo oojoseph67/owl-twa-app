@@ -30,7 +30,6 @@ const RockPaperScissors = () => {
   const [spend, setSpend] = useState<number>(MIN_SPEND);
   const [selected, setSelected] = useState<number | null>(null);
   const [botSelected, setBotSelected] = useState<number | null>(null);
-  const [displayWining, setDisplayWining] = useState(false);
 
   const {
     userMoves,
@@ -49,7 +48,7 @@ const RockPaperScissors = () => {
   } = useOwlTWAStore();
   const reversedResults = rpsResults.slice().reverse().slice(0, 10);
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     if (selected === null || selected === undefined || !spend) return;
 
     purchaseUsingPointsMutation.mutate(
@@ -76,9 +75,11 @@ const RockPaperScissors = () => {
     return Math.floor(Math.random() * 3);
   };
 
-  const handleMove = () => {
-    console.log({ selected, spend });
-    if (selected === null || selected === undefined || !purchased) return;
+  const handleMove = async () => {
+    if (selected === null || selected === undefined) return;
+    if (!purchased) {
+      await handlePurchase();
+    }
 
     // const possibleMoves = [0, 1, 2].filter((move) => move !== selected);
     // const randomMove =
@@ -105,15 +106,17 @@ const RockPaperScissors = () => {
       });
     }
 
-    setDisplayWining(true);
-    setTimeout(() => {
-      setDisplayWining(false);
-      setSelected(null);
-      setBotSelected(null);
-      setSpend(MIN_SPEND);
-      updatePurchased(false);
-      setCurrentRPSResult();
-    }, 5000);
+    if (currentRPSResult) {
+      const timer = setTimeout(() => {
+        setSelected(null);
+        setBotSelected(null);
+        setSpend(MIN_SPEND);
+        updatePurchased(false);
+        setCurrentRPSResult();
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
   }, [currentRPSResult]);
 
   return (
@@ -237,7 +240,7 @@ const RockPaperScissors = () => {
         </div>
 
         <div className="w-full mt-[20px]">
-          {!displayWining ? (
+          {!currentRPSResult ? (
             <>
               {/* Select Choice */}
               <div className="w-full">
@@ -291,19 +294,17 @@ const RockPaperScissors = () => {
                 className={`${
                   selected == null ? "bg-[#534949]" : "bg-red"
                 } mt-[10px] w-full h-[43px] rounded-[8px] font-[600]`}
-                onClick={purchased ? handleMove : handlePurchase}
+                onClick={handleMove}
               >
                 {selected == null
                   ? "Select Move"
-                  : purchased
-                  ? `Go (Round ${gameCount + 1}/3)`
-                  : "Buy Ticket"}
+                  : `Go (Round ${gameCount + 1}/3)`}
               </button>
             </>
           ) : (
             <div
               className={`${
-                currentRPSResult?.isWon ? "border-[#056F3D]" : "border-red"
+                currentRPSResult.isWon ? "border-[#056F3D]" : "border-red"
               } w-full h-[155px] border-[3px] rounded-[8px] flex flex-col items-center justify-center`}
             >
               <div className="dots mb-[5px] flex gap-[3px]">
@@ -312,10 +313,10 @@ const RockPaperScissors = () => {
                 <div className="size-[5px] bg-white rounded-full opacity-60" />
               </div>
               <p className="font-[600] leading-[1.1]">
-                You {currentRPSResult?.isWon ? "Won" : "Lost"}
+                You {currentRPSResult.isWon ? "Won" : "Lost"}
               </p>
               <p className="font-[600] text-[10px] opacity-60">
-                {formatNumber(currentRPSResult?.outcome || 0)} $REDBIRD
+                {formatNumber(currentRPSResult.outcome || 0)} $REDBIRD
               </p>
             </div>
           )}

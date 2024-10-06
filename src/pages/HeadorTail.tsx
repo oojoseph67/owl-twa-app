@@ -64,6 +64,8 @@ const HeadorTail = () => {
           setTimeout(() => {
             setDisplayWining(false);
             setResult(null);
+            setSpend(MIN_SPEND);
+            setSelectedBet(null);
           }, 5000);
         },
         onError(error) {
