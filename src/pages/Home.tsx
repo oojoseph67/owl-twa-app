@@ -14,7 +14,6 @@ import {
   useAddWalletAddressMutation,
   useRegisterUserMutation,
 } from "../modules/mutation";
-import { customUserTelegramId } from "../utils/config";
 import { formatNumber, getFormatAddress } from "../utils";
 import { useIsConnectionRestored, useTonConnectUI } from "@tonconnect/ui-react";
 
@@ -24,7 +23,7 @@ const Home = () => {
   const { userTelegramId, userPhoto, firstName } = useTelegramContext();
 
   const { data: userQueryData } = useGetUserQuery({
-    userTelegramId: customUserTelegramId,
+    userTelegramId,
   });
 
   const { userData } = userQueryData || {};
@@ -53,7 +52,7 @@ const Home = () => {
 
         registerUserMutation.mutate({
           username: firstName || "Joseph",
-          userTelegramId: Number(userTelegramId || customUserTelegramId),
+          userTelegramId: Number(userTelegramId),
           refTelegramId: Number(refCode),
           profilePicture: userPhoto!,
         });
@@ -61,14 +60,7 @@ const Home = () => {
         console.log("User already registered");
       }
     }
-  }, [
-    userQueryData,
-    location,
-    firstName,
-    userTelegramId,
-    customUserTelegramId,
-    userPhoto,
-  ]);
+  }, [userQueryData, location, firstName, userTelegramId, userPhoto]);
 
   const handleOpen = () => {
     tonConnectUI.connectWallet();

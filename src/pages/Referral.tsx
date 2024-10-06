@@ -4,7 +4,6 @@ import { TbCopyCheckFilled as Copied } from "react-icons/tb";
 import inviteIcon from "../assets/invte.svg";
 import { useEffect, useState } from "react";
 import { useTelegramContext } from "../context/TelegramContext";
-import { customUserTelegramId } from "../utils/config";
 
 const Referral = () => {
   const { userTelegramId } = useTelegramContext();
@@ -13,10 +12,10 @@ const Referral = () => {
   const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
-    if (userTelegramId || customUserTelegramId) {
+    if (userTelegramId) {
       const baseUrl = window.location.origin;
       setInviteLink(
-        `${baseUrl}?startapp=${userTelegramId || customUserTelegramId}`
+        `${baseUrl}?startapp=${userTelegramId}`
       );
     }
   }, [userTelegramId]);

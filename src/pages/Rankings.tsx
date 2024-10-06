@@ -1,7 +1,6 @@
 import Rank from "../components/Rank";
 import { useTelegramContext } from "../context/TelegramContext";
 import { useGetLeaderboardQuery, UserInterface } from "../modules/query";
-import { customUserTelegramId } from "../utils/config";
 
 const Rankings = () => {
   const { userTelegramId } = useTelegramContext();
@@ -19,7 +18,7 @@ const Rankings = () => {
             <Rank
               key={index}
               position={index + 1}
-              userTelegramId={userTelegramId || customUserTelegramId}
+              userTelegramId={userTelegramId}
               leaderboard={leaderboard}
             />
           ))}

@@ -6,7 +6,6 @@ import rockImg from "../assets/rock.png";
 import scissorsImg from "../assets/scissors.png";
 import useOwlTWAStore, { RPSResult as RPSResultType } from "../utils/store";
 import { useGetUserQuery } from "../modules/query";
-import { customUserTelegramId } from "../utils/config";
 import { useTelegramContext } from "../context/TelegramContext";
 import {
   useClaimRewardsMutation,
@@ -22,7 +21,7 @@ const RockPaperScissors = () => {
   const purchaseUsingPointsMutation = usePurchaseUsingPointsMutation();
   const claimRewardsMutation = useClaimRewardsMutation();
   const { data: userQueryData } = useGetUserQuery({
-    userTelegramId: customUserTelegramId,
+    userTelegramId,
   });
 
   const { userData } = userQueryData || {};
@@ -56,7 +55,7 @@ const RockPaperScissors = () => {
     purchaseUsingPointsMutation.mutate(
       {
         points: Number(spend),
-        userTelegramId: Number(userTelegramId || customUserTelegramId),
+        userTelegramId: Number(userTelegramId),
       },
       {
         onSuccess(data, variables, context) {
@@ -102,7 +101,7 @@ const RockPaperScissors = () => {
     if (currentRPSResult?.outcome && currentRPSResult.outcome > 0) {
       claimRewardsMutation.mutate({
         points: Number(currentRPSResult.outcome),
-        userTelegramId: Number(userTelegramId || customUserTelegramId),
+        userTelegramId: Number(userTelegramId),
       });
     }
 
