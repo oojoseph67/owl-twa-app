@@ -5,6 +5,7 @@ import { useGetLeaderboardQuery, UserInterface } from "../modules/query";
 const Rankings = () => {
   const { userTelegramId } = useTelegramContext();
   const { data: leaderboardData } = useGetLeaderboardQuery();
+  // const data = useGetLeaderboardQuery();
 
   return (
     <div className="rankings h-full w-full relative overflow-y-auto overflow-x-hidden px-[19px] py-[20px]">
