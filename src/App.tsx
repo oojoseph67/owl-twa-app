@@ -7,6 +7,7 @@ import Referral from "./pages/Referral";
 import Rankings from "./pages/Rankings";
 import HeadorTail from "./pages/HeadorTail";
 import RockPaperScissors from "./pages/RockPaperScissors";
+import Spin from "./pages/Spin";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/headortail" element={<HeadorTail />} />
           <Route path="/rock-paper-scissors" element={<RockPaperScissors />} />
+          <Route path="/spin" element={<Spin />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/ranking" element={<Rankings />} />
           <Route path="/referral" element={<Referral />} />
