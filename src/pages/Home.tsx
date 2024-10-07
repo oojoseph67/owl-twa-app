@@ -84,7 +84,6 @@ const Home = () => {
           onClick={handleOpen}
           className="bg-red w-full h-[43px] rounded-[8px] flex items-center gap-[10px] justify-center"
         >
-          <img src={tonIcon} alt="ton" />
           {connectionRestored ? (
             <>
               {account?.address ? (
@@ -92,7 +91,10 @@ const Home = () => {
                   Connected {getFormatAddress(account.address)}
                 </p>
               ) : (
-                <p className="font-[600]">Connect TON Wallet</p>
+                <>
+                  <img src={tonIcon} alt="ton" />
+                  <p className="font-[600]">Connect TON Wallet</p>
+                </>
               )}
             </>
           ) : (
@@ -141,11 +143,16 @@ const Home = () => {
             </button>
           </Link>
 
-          <div className="w-[33%] h-[114px] pt-[10px] pb-[10px] rounded-[16px] border border-red flex flex-col justify-between items-center">
+          <Link
+            to="/spin"
+            className="w-[33%] h-[114px] pt-[10px] pb-[10px] rounded-[16px] border border-red flex flex-col justify-between items-center"
+          >
             <img className="h-[39px]" src={spin} alt="spin" />
             <p className="text-[12px] font-[500] text-center">Spinning</p>
-            <p className="text-red text-[12px] font-[500]">soon</p>
-          </div>
+            <button className="bg-red rounded-[4px] px-[10px] text-[10px] font-[500]">
+              play
+            </button>
+          </Link>
         </div>
       </div>
 

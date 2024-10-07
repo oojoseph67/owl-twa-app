@@ -35,13 +35,11 @@ const Slider: React.FC<SliderProps> = ({
     setIsDragging(true);
     calculateSpend(clientX);
   };
-
   const handleMove = (clientX: number): void => {
     if (isDragging) {
       calculateSpend(clientX);
     }
   };
-
   const handleEnd = (): void => {
     setIsDragging(false);
   };
@@ -51,17 +49,17 @@ const Slider: React.FC<SliderProps> = ({
     const handleTouchMove = (e: TouchEvent) => handleMove(e.touches[0].clientX);
 
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('touchmove', handleTouchMove);
-      document.addEventListener('mouseup', handleEnd);
-      document.addEventListener('touchend', handleEnd);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("touchmove", handleTouchMove);
+      document.addEventListener("mouseup", handleEnd);
+      document.addEventListener("touchend", handleEnd);
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('mouseup', handleEnd);
-      document.removeEventListener('touchend', handleEnd);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("mouseup", handleEnd);
+      document.removeEventListener("touchend", handleEnd);
     };
   }, [isDragging]);
 
@@ -78,19 +76,21 @@ const Slider: React.FC<SliderProps> = ({
         <p className="text-xs">Min</p>
         <div
           ref={sliderRef}
-          className={`flex-1 h-2 bg-gray-600 rounded-full relative ${disabled ? 'opacity-60' : ''}`}
+          className={`flex-1 h-2 bg-gray-600 rounded-full relative ${
+            disabled ? "opacity-60" : ""
+          }`}
           onMouseDown={(e) => handleStart(e.clientX)}
           onTouchStart={(e) => handleStart(e.touches[0].clientX)}
         >
           <div
-            className="absolute h-full bg-red-500 rounded-full"
+            className="absolute h-full bg-[red] rounded-full"
             style={{ width: `${percentage}%` }}
           />
           <div
-            className="absolute top-1/2 -translate-y-1/2 cursor-pointer"
+            className="absolute top-1/2 -translate-y-1/2 cursor-pointer size-[28px]"
             style={{ left: `calc(${percentage}% - 14px)` }}
           >
-            <img className="w-7 h-7" src={smallbird} alt="bird" />
+            <img className="size-full" src={smallbird} alt="bird" />
           </div>
         </div>
         <p className="text-xs">All</p>

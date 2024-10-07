@@ -49,6 +49,10 @@
   .rankings .rank span p {
     @apply text-[10px];
   }
+
+  .spin-reward-display {
+    @apply w-[25%] h-[21px] rounded-[4px] text-[10px] font-[500] grid place-items-center;
+  }
 }
 
 .dots div:nth-child(1) {
