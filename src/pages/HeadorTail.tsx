@@ -50,7 +50,7 @@ const HeadorTail = () => {
             outcome: headOrTailResult?.outcome,
             status: headOrTailResult?.status,
           };
-          addHOTResult(results);
+          addHOTResult(results as Result);
 
           if (headOrTailResult?.status === "won") {
             claimRewardsMutation.mutate({

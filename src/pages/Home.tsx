@@ -126,7 +126,7 @@ const Home = () => {
             <img className="size-[45px]" src={bird} alt="bird" />
             <p className="text-[12px] font-[500] text-center">Head or Tail</p>
             <button className="bg-red rounded-[4px] px-[10px] text-[10px] font-[500]">
-              play
+              Play
             </button>
           </Link>
 
@@ -139,7 +139,7 @@ const Home = () => {
               Rock paper <br /> scissor
             </p>
             <button className="bg-red rounded-[4px] px-[10px] text-[10px] font-[500]">
-              play
+              Play
             </button>
           </Link>
 
@@ -150,7 +150,7 @@ const Home = () => {
             <img className="h-[39px]" src={spin} alt="spin" />
             <p className="text-[12px] font-[500] text-center">Spinning</p>
             <button className="bg-red rounded-[4px] px-[10px] text-[10px] font-[500]">
-              play
+              Play
             </button>
           </Link>
         </div>
