@@ -1,7 +1,9 @@
 import React from "react";
 import { formatNumber } from "../utils";
 
-const OPTIONS: { take: "0.0x" | "1.2x" | "1.7x" | "2.5x"; color: string }[] = [
+export type TakeType = "0.0x" | "1.2x" | "1.7x" | "2.5x";
+
+const OPTIONS: { take: TakeType; color: string }[] = [
   { take: "0.0x", color: "#329FF9" },
   { take: "1.2x", color: "#19D852" },
   { take: "1.7x", color: "#FFBD29" },
@@ -9,14 +11,14 @@ const OPTIONS: { take: "0.0x" | "1.2x" | "1.7x" | "2.5x"; color: string }[] = [
 ];
 
 const SpinResult = ({
-  i,
+  position,
   take,
   spend,
   isWon,
   outcome,
 }: {
-  i: number | string;
-  take: "0.0x" | "1.2x" | "1.7x" | "2.5x";
+  position: number | string;
+  take: TakeType;
   spend: number;
   isWon: boolean;
   outcome: number;
@@ -26,7 +28,7 @@ const SpinResult = ({
   return (
     <div className="w-full h-[53px] bg-[#242628] rounded-[24px] flex px-[30px] items-center justify-between">
       <span className="w-[55%] flex items-center gap-[10px]">
-        <p className="text-[14px] font-[600] opacity-60">#{i}</p>
+        <p className="text-[14px] font-[600] opacity-60">#{position}</p>
         <div className="flex-1">
           <div
             style={{ backgroundColor: bg_color }}

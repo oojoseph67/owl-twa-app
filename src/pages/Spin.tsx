@@ -5,11 +5,19 @@ import Slider from "../components/Slider";
 import { useState } from "react";
 import { useTelegramContext } from "../context/TelegramContext";
 import { useGetUserQuery } from "../modules/query";
-import SpinResult from "../components/Spin-Result";
+import {
+  useClaimRewardsMutation,
+  usePurchaseUsingPointsMutation,
+} from "../modules/mutation";
+import useOwlTWAStore, { SpinResult as SpinResultType } from "../utils/store";
+import SpinResult, { TakeType } from "../components/Spin-Result";
 
 const MIN_SPEND = 100;
 
 const Spin = () => {
+  const purchaseUsingPointsMutation = usePurchaseUsingPointsMutation();
+  const claimRewardsMutation = useClaimRewardsMutation();
+
   const { userTelegramId } = useTelegramContext();
 
   const { data: userQueryData } = useGetUserQuery({
@@ -19,6 +27,69 @@ const Spin = () => {
   const { points: userPoints } = userData || {};
 
   const [spend, setSpend] = useState<number>(MIN_SPEND);
+
+  const { spinResults, spin, addSpinResult } = useOwlTWAStore();
+  const reversedResults = spinResults.slice().reverse().slice(0, 20);
+
+  console.log({ spinResults });
+
+  const [rotation, setRotation] = useState<number>(0);
+  const [isSpinning, setIsSpinning] = useState<boolean>(false);
+  const [rewardEarned, setRewardEarned] = useState(0);
+
+  const handlePurchase = async () => {
+    if (!spend) return;
+
+    const rewardId = Math.floor(Math.random() * 6);
+    console.log({ rewardId });
+
+    purchaseUsingPointsMutation.mutate(
+      {
+        points: Number(spend),
+        userTelegramId: Number(userTelegramId),
+      },
+      {
+        onSuccess(data, variables, context) {
+          const spinResult = spin({ rewardIndex: rewardId, spend: spend });
+          console.log({ spinResult });
+
+          // @ts-ignore
+          addSpinResult(spinResult as SpinResultType);
+
+          // @ts-ignore
+          if (spinResult?.outcome > 0) {
+            claimRewardsMutation.mutate({
+              // @ts-ignore
+              points: Number(spinResult?.outcome),
+              userTelegramId: Number(userTelegramId),
+            });
+          }
+        },
+        onError(error) {
+          console.error("Error during bet processing:", error);
+          alert(
+            "An error occurred while processing your bet. Please try again."
+          );
+        },
+      }
+    );
+
+    //Spin Animation
+    if (isSpinning) return;
+    setIsSpinning(true);
+    setRewardEarned(rewardId);
+
+    const sectorAngle = rewardId * 60;
+
+    const backToZeroDeg = 360 - rewardEarned * 60;
+    const baseRotation = 720;
+    const finalRotation = baseRotation + sectorAngle + backToZeroDeg;
+
+    setRotation(rotation + finalRotation);
+
+    //return slider to min-spend
+    setSpend(MIN_SPEND > userPoints ? 0 : MIN_SPEND);
+  };
 
   return (
     <div className="h-full w-full relative overflow-y-auto overflow-x-hidden px-[19px] py-[20px]">
@@ -32,6 +103,13 @@ const Spin = () => {
             alt="bird"
           />
           <img
+            onTransitionEnd={() => {
+              setIsSpinning(false);
+            }}
+            style={{
+              transform: `rotate(${rotation}deg)`,
+              transition: "transform 2s ease-out",
+            }}
             className="absolute h-full w-full top-0 left-0"
             src={spinImg}
             alt="spin"
@@ -58,7 +136,11 @@ const Spin = () => {
                 minSpend={MIN_SPEND}
                 onChange={(newSpend) => setSpend(newSpend)}
               />
-              <button className="mt-[20px] w-full h-[43px] bg-red rounded-[8px] font-[600]">
+              <button
+                onClick={handlePurchase}
+                disabled={purchaseUsingPointsMutation.isLoading}
+                className="mt-[20px] w-full h-[43px] bg-red rounded-[8px] font-[600]"
+              >
                 Spin
               </button>
             </div>
@@ -86,22 +168,24 @@ const Spin = () => {
         <p className="font-[500] opacity-60">Results</p>
 
         <div className="mt-[5px] space-y-[3px]">
-          <SpinResult
-            key={0}
-            i={1}
-            take={"2.5x"}
-            spend={150}
-            outcome={375}
-            isWon={true}
-          />
-          <SpinResult
-            key={1}
-            i={2}
-            take={"0.0x"}
-            spend={150}
-            outcome={150}
-            isWon={false}
-          />
+          {reversedResults.length === 0 ? (
+            <div>No results available.</div>
+          ) : (
+            reversedResults.map((result, index) => {
+              const isWon = result.outcome > 0;
+
+              return (
+                <SpinResult
+                  key={index}
+                  position={index + 1}
+                  take={result.bet as TakeType}
+                  spend={result.spend}
+                  outcome={result.outcome}
+                  isWon={isWon}
+                />
+              );
+            })
+          )}
         </div>
       </div>
     </div>
