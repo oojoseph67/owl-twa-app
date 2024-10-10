@@ -2,7 +2,7 @@ import bird from "../assets/birdBW.png";
 import spinImg from "../assets/spin.png";
 import arrow from "../assets/arrow.svg";
 import Slider from "../components/Slider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTelegramContext } from "../context/TelegramContext";
 import { useGetUserQuery } from "../modules/query";
 import {
@@ -28,7 +28,13 @@ const Spin = () => {
 
   const [spend, setSpend] = useState<number>(MIN_SPEND);
 
-  const { spinResults, spin, addSpinResult } = useOwlTWAStore();
+  const {
+    spinResults,
+    currentSpinResult,
+    spin,
+    addSpinResult,
+    setCurrentSpinResult,
+  } = useOwlTWAStore();
   const reversedResults = spinResults.slice().reverse().slice(0, 20);
 
   console.log({ spinResults });
@@ -40,7 +46,7 @@ const Spin = () => {
   const handlePurchase = async () => {
     if (!spend) return;
 
-    const rewardId = Math.floor(Math.random() * 6);
+    const rewardId = Math.floor(Math.random() * 4) + 1;
     console.log({ rewardId });
 
     purchaseUsingPointsMutation.mutate(
@@ -50,6 +56,19 @@ const Spin = () => {
       },
       {
         onSuccess(data, variables, context) {
+          //Spin Animation
+          if (isSpinning) return;
+          setIsSpinning(true);
+          setRewardEarned(rewardId);
+
+          const sectorAngle = rewardId * 60;
+
+          const backToZeroDeg = 360 - rewardEarned * 60;
+          const baseRotation = 720;
+          const finalRotation = baseRotation + sectorAngle + backToZeroDeg;
+
+          setRotation(rotation + finalRotation);
+
           const spinResult = spin({ rewardIndex: rewardId, spend: spend });
           console.log({ spinResult });
 
@@ -64,6 +83,8 @@ const Spin = () => {
               userTelegramId: Number(userTelegramId),
             });
           }
+
+          setIsSpinning(false);
         },
         onError(error) {
           console.error("Error during bet processing:", error);
@@ -73,23 +94,18 @@ const Spin = () => {
         },
       }
     );
-
-    //Spin Animation
-    if (isSpinning) return;
-    setIsSpinning(true);
-    setRewardEarned(rewardId);
-
-    const sectorAngle = rewardId * 60;
-
-    const backToZeroDeg = 360 - rewardEarned * 60;
-    const baseRotation = 720;
-    const finalRotation = baseRotation + sectorAngle + backToZeroDeg;
-
-    setRotation(rotation + finalRotation);
-
-    //return slider to min-spend
-    setSpend(MIN_SPEND > userPoints ? 0 : MIN_SPEND);
   };
+
+  useEffect(() => {
+    if (currentSpinResult && !isSpinning) {
+      const timer = setTimeout(() => {
+        setSpend(MIN_SPEND);
+        setCurrentSpinResult();
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentSpinResult]);
 
   return (
     <div className="h-full w-full relative overflow-y-auto overflow-x-hidden px-[19px] py-[20px]">
@@ -122,7 +138,7 @@ const Spin = () => {
         </div>
 
         <div className="w-full mt-[40px]">
-          {true ? (
+          {!currentSpinResult && !isSpinning ? (
             <div className="w-full">
               <div className="mb-[2px] w-full flex gap-[5px]">
                 <div className="spin-reward-display bg-[#329FF9]">0.0x</div>
@@ -156,9 +172,11 @@ const Spin = () => {
                 <div className="size-[5px] bg-white rounded-full opacity-60" />
               </div>
               <p className="font-[600] leading-[1.1]">
-                You {true ? "Won" : "Lost"}
+                You {currentSpinResult?.outcome! > 0 ? "Won" : "Lost"}
               </p>
-              <p className="font-[600] text-[10px] opacity-60">500 $REDBIRD</p>
+              <p className="font-[600] text-[10px] opacity-60">
+                {currentSpinResult?.outcome} $REDBIRD
+              </p>
             </div>
           )}
         </div>
