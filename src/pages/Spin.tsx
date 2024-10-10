@@ -20,6 +20,26 @@ const Spin = () => {
 
   const [spend, setSpend] = useState<number>(MIN_SPEND);
 
+  const [rotation, setRotation] = useState<number>(0);
+  const [isSpinning, setIsSpinning] = useState<boolean>(false);
+  const [rewardEarned, setRewardEarned] = useState(0);
+
+  const handleWheelSpin = () => {
+    if (isSpinning) return;
+    setIsSpinning(true);
+
+    const rewardId = Math.floor(Math.random() * 6);
+    setRewardEarned(rewardId);
+
+    const sectorAngle = rewardId * 60;
+
+    const backToZeroDeg = 600 - rewardEarned * 60;
+    const baseRotation = 720;
+    const finalRotation = baseRotation + sectorAngle + backToZeroDeg;
+
+    setRotation(rotation + finalRotation);
+  };
+
   return (
     <div className="h-full w-full relative overflow-y-auto overflow-x-hidden px-[19px] py-[20px]">
       <h1 className="text-[32px] font-[600] text-center">Hoot Spin</h1>
@@ -32,6 +52,13 @@ const Spin = () => {
             alt="bird"
           />
           <img
+            onTransitionEnd={() => {
+              setIsSpinning(false);
+            }}
+            style={{
+              transform: `rotate(${rotation}deg)`,
+              transition: "transform 2s ease-out",
+            }}
             className="absolute h-full w-full top-0 left-0"
             src={spinImg}
             alt="spin"
@@ -58,7 +85,10 @@ const Spin = () => {
                 minSpend={MIN_SPEND}
                 onChange={(newSpend) => setSpend(newSpend)}
               />
-              <button className="mt-[20px] w-full h-[43px] bg-red rounded-[8px] font-[600]">
+              <button
+                onClick={handleWheelSpin}
+                className="mt-[20px] w-full h-[43px] bg-red rounded-[8px] font-[600]"
+              >
                 Spin
               </button>
             </div>
