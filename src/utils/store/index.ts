@@ -16,9 +16,23 @@ export type RPSResult = {
   isWon: boolean;
 };
 
+export type SpinResult = {
+  bet: string | number;
+  spend: number;
+  outcome: number;
+};
+
+export const SpinMultiplier = [
+  { id: 1, multiplier: 0.0, bet: "O.0x" },
+  { id: 2, multiplier: 1.2, bet: "1.2x" },
+  { id: 3, multiplier: 1.7, bet: "1.7x" },
+  { id: 4, multiplier: 2.5, bet: "1.5x" },
+];
+
 interface OwlTWAStore {
   points: number;
   hotResults: Result[];
+  spinResults: SpinResult[];
   rpsResults: RPSResult[];
   userMoves: number[];
   botMoves: number[];
@@ -27,6 +41,7 @@ interface OwlTWAStore {
   gameCount: number;
   spend: number;
   currentRPSResult: RPSResult | null;
+  currentSpinResult: SpinResult | null;
   purchased: boolean;
   claimedTasks: string[];
   collaborationTasks: string[];
@@ -36,7 +51,15 @@ interface OwlTWAStore {
   updatePurchased: (purchased: boolean) => void;
   updateSpend: (spend: number) => void;
   addPoints: (points: number) => void;
-  addHOTResult: (result: any) => void;
+  addHOTResult: (result: Result) => void;
+  addSpinResult: (result: SpinResult) => void;
+  spin: ({
+    rewardIndex,
+    spend,
+  }: {
+    rewardIndex: number;
+    spend: number;
+  }) => void;
   setHeadOrTailResult: ({
     selectedBet,
     spend,
@@ -63,30 +86,41 @@ const loadState = () => {
   const points = parseInt(localStorage.getItem("points") || "0");
   const hotResults = JSON.parse(localStorage.getItem("hotResults") || "[]");
   const rpsResults = JSON.parse(localStorage.getItem("rpsResultsV3") || "[]");
+  const spinResults = JSON.parse(localStorage.getItem("spinResults") || "[]");
   const claimedTasks = JSON.parse(localStorage.getItem("claimedTasks") || "[]");
   const collaborationTasks = JSON.parse(
     localStorage.getItem("claimedTasks") || "[]"
   );
 
-  return { points, hotResults, rpsResults, claimedTasks, collaborationTasks };
+  return {
+    points,
+    hotResults,
+    rpsResults,
+    claimedTasks,
+    collaborationTasks,
+    spinResults,
+  };
 };
 
 const saveState = ({
   points,
   hotResults,
   rpsResults,
+  spinResults,
   claimedTasks,
   collaborationTasks,
 }: {
   points: number;
   hotResults: Result[];
   rpsResults: RPSResult[];
+  spinResults: SpinResult[];
   claimedTasks: string[];
   collaborationTasks: string[];
 }) => {
   localStorage.setItem("points", points.toString());
   localStorage.setItem("hotResults", JSON.stringify(hotResults));
   localStorage.setItem("rpsResultsV3", JSON.stringify(rpsResults));
+  localStorage.setItem("spinResults", JSON.stringify(spinResults));
   localStorage.setItem("claimedTasks", JSON.stringify(claimedTasks));
   localStorage.setItem(
     "collaborationTasks",
@@ -96,10 +130,11 @@ const saveState = ({
 
 const initialState = loadState();
 
-const useOwlTWAStore = create<OwlTWAStore>((set) => ({
+const useOwlTWAStore = create<OwlTWAStore>((set, get) => ({
   points: initialState.points,
   hotResults: initialState.hotResults,
   rpsResults: initialState.rpsResults,
+  spinResults: initialState.spinResults,
   userMoves: [],
   botMoves: [],
   userScores: 0,
@@ -107,9 +142,40 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
   gameCount: 0,
   spend: 0,
   currentRPSResult: null,
+  currentSpinResult: null,
   purchased: false,
   claimedTasks: initialState.claimedTasks,
   collaborationTasks: initialState.collaborationTasks,
+  addSpinResult(result: SpinResult) {
+    set((state) => {
+      const newResults = [...state.spinResults, result];
+      saveState({
+        points: state.points,
+        hotResults: state.hotResults,
+        rpsResults: state.rpsResults,
+        claimedTasks: state.claimedTasks,
+        collaborationTasks: state.collaborationTasks,
+        spinResults: newResults,
+      });
+      return { spinResults: newResults };
+    });
+  },
+  spin({ rewardIndex, spend }) {
+    const multiplier = SpinMultiplier.find(
+      (reward) => reward.id === rewardIndex
+    );
+    const reward = spend * multiplier?.multiplier!;
+
+    const result: SpinResult = {
+      bet: multiplier?.bet!,
+      spend,
+      outcome: reward,
+    };
+
+    set((state) => ({ currentSpinResult: result }));
+
+    return result as SpinResult;
+  },
   setCurrentRPSResult() {
     set((state) => {
       return { currentRPSResult: null };
@@ -134,6 +200,7 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
         rpsResults: state.rpsResults,
         claimedTasks: state.claimedTasks,
         collaborationTasks: state.collaborationTasks,
+        spinResults: state.spinResults,
       });
       return { points: newPoints };
     });
@@ -147,6 +214,7 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
         rpsResults: state.rpsResults,
         claimedTasks: state.claimedTasks,
         collaborationTasks: state.collaborationTasks,
+        spinResults: state.spinResults,
       });
       return { hotResults: newResults };
     });
@@ -197,6 +265,7 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
         rpsResults: newResults,
         claimedTasks: state.claimedTasks,
         collaborationTasks: state.collaborationTasks,
+        spinResults: state.spinResults,
       });
       return { rpsResults: newResults };
     });
@@ -289,6 +358,7 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
         rpsResults: state.rpsResults,
         claimedTasks: newClaimedTasks,
         collaborationTasks: state.collaborationTasks,
+        spinResults: state.spinResults,
       });
       return { claimedTasks: newClaimedTasks, points: newPoints };
     }),
@@ -310,6 +380,7 @@ const useOwlTWAStore = create<OwlTWAStore>((set) => ({
         rpsResults: state.rpsResults,
         claimedTasks: state.claimedTasks,
         collaborationTasks: newCollaborationTasks,
+        spinResults: state.spinResults,
       });
       return { collaborationTasks: newCollaborationTasks, points: newPoints };
     }),
