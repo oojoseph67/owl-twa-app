@@ -43,10 +43,13 @@ const Spin = () => {
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [rewardEarned, setRewardEarned] = useState(0);
 
+  const [showResult, setShowResult] = useState(false);
+
   const handlePurchase = async () => {
     if (!spend) return;
 
-    const rewardId = Math.floor(Math.random() * 4) + 1;
+    // const rewardId = Math.floor(Math.random() * 4) + 1;
+    const rewardId = Math.floor(Math.random() * 6); //6 items
     console.log({ rewardId });
 
     purchaseUsingPointsMutation.mutate(
@@ -85,6 +88,10 @@ const Spin = () => {
           }
 
           setIsSpinning(false);
+
+          setTimeout(() => {
+            setShowResult(true);
+          }, 2100); //Show the spin result after the spin animation (animation takes 2s)
         },
         onError(error) {
           console.error("Error during bet processing:", error);
@@ -101,6 +108,7 @@ const Spin = () => {
       const timer = setTimeout(() => {
         setSpend(MIN_SPEND);
         setCurrentSpinResult();
+        setShowResult(false);
       }, 5000);
 
       return () => clearTimeout(timer);
@@ -138,7 +146,7 @@ const Spin = () => {
         </div>
 
         <div className="w-full mt-[40px]">
-          {!currentSpinResult && !isSpinning ? (
+          {!showResult ? (
             <div className="w-full">
               <div className="mb-[2px] w-full flex gap-[5px]">
                 <div className="spin-reward-display bg-[#329FF9]">0.0x</div>
@@ -163,7 +171,9 @@ const Spin = () => {
           ) : (
             <div
               className={`${
-                true ? "border-[#056F3D]" : "border-red"
+                currentSpinResult?.bet !== "0.0x"
+                  ? "border-[#056F3D]"
+                  : "border-red"
               } w-full h-[155px] border-[3px] rounded-[8px] flex flex-col items-center justify-center`}
             >
               <div className="dots mb-[5px] flex gap-[3px]">
