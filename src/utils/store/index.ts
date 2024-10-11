@@ -23,10 +23,12 @@ export type SpinResult = {
 };
 
 export const SpinMultiplier = [
-  { id: 1, multiplier: 0.0, bet: "O.0x" },
-  { id: 2, multiplier: 1.2, bet: "1.2x" },
-  { id: 3, multiplier: 1.7, bet: "1.7x" },
-  { id: 4, multiplier: 2.5, bet: "1.5x" },
+  { id: 0, multiplier: 1.2, bet: "1.2x" },
+  { id: 1, multiplier: 1.7, bet: "1.7x" },
+  { id: 2, multiplier: 0.0, bet: "0.0x" },
+  { id: 3, multiplier: 1.2, bet: "1.2x" },
+  { id: 4, multiplier: 0.0, bet: "0.0x" },
+  { id: 5, multiplier: 2.5, bet: "2.5x" },
 ];
 
 interface OwlTWAStore {
@@ -48,6 +50,7 @@ interface OwlTWAStore {
   claimTask: (taskId: string) => void;
   collaborationTask: (taskId: string) => void;
   setCurrentRPSResult: () => void;
+  setCurrentSpinResult: () => void;
   updatePurchased: (purchased: boolean) => void;
   updateSpend: (spend: number) => void;
   addPoints: (points: number) => void;
@@ -179,6 +182,11 @@ const useOwlTWAStore = create<OwlTWAStore>((set, get) => ({
   setCurrentRPSResult() {
     set((state) => {
       return { currentRPSResult: null };
+    });
+  },
+  setCurrentSpinResult() {
+    set((state) => {
+      return { currentSpinResult: null };
     });
   },
   updatePurchased(purchased: boolean) {
