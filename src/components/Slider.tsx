@@ -72,7 +72,7 @@ const Slider: React.FC<SliderProps> = ({
         <p className="text-xs font-medium">Spend: {spend.toFixed(0)}</p>
       </div>
 
-      <div className="w-full h-12 rounded-lg bg-gray-800 flex justify-between items-center px-3 gap-3">
+      <div className="w-full h-12 rounded-lg bg-gray-800 flex justify-between items-center px-3 gap-3 overflow-hidden">
         <p className="text-xs">Min</p>
         <div
           ref={sliderRef}
