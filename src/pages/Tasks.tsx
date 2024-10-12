@@ -47,6 +47,7 @@ const Tasks = () => {
                 <button
                   disabled={claimedTasks.includes(task.id)}
                   onClick={() => handleClaimTask(task.id)}
+                  className="bg-red disabled:bg-[#121314]"
                 >
                   {!claimedTasks.includes(task.id) ? (
                     <div className="not-done">{task.buttonText}</div>
@@ -73,9 +74,11 @@ const Tasks = () => {
                   <h6>{collab.name}</h6>
                   <p>{collab.points} $REDBIRD</p>
                 </span>
+
                 <button
-                  disabled={collaborationTasks.includes(collab.id)}
-                  onClick={() => handleCollaborationTask(collab.id)}
+                  disabled={claimedTasks.includes(collab.id)}
+                  onClick={() => handleClaimTask(collab.id)}
+                  className="bg-red disabled:bg-[#121314]"
                 >
                   {!claimedTasks.includes(collab.id) ? (
                     <div className="not-done">{collab.buttonText}</div>

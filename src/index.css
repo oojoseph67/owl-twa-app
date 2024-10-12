@@ -30,11 +30,8 @@
   .tasks .task span p {
     @apply text-[10px] opacity-60;
   }
-  .tasks .task .done {
-    @apply h-[21px] w-[40px] rounded-[4px] bg-[#121314] text-[10px] font-[500];
-  }
-  .tasks .task .not-done {
-    @apply h-[21px] w-[40px] rounded-[4px] bg-red text-[10px] font-[500];
+  .tasks .task button {
+    @apply h-[21px] w-[40px] rounded-[4px] grid place-items-center text-[10px] font-[500];
   }
 
   .rankings .rank {
