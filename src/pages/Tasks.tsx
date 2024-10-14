@@ -1,4 +1,5 @@
 import bird from "../assets/bird.png";
+import Task from "../components/Task";
 import { CollaborationList, TaskList } from "../utils";
 import useOwlTWAStore from "../utils/store";
 
@@ -36,27 +37,8 @@ const Tasks = () => {
         </div>
 
         <div className="mt-[5px] w-full rounded-[16px] bg-[#242628] px-[10px] py-[18px] space-y-[20px]">
-          {TaskList.map((task) => {
-            return (
-              <div className="task">
-                <img src={task.icon} alt="media" />
-                <span>
-                  <h6>{task.name}</h6>
-                  <p>{task.points} $REDBIRD</p>
-                </span>
-                <button
-                  disabled={claimedTasks.includes(task.id)}
-                  onClick={() => handleClaimTask(task.id)}
-                  className="bg-red disabled:bg-[#121314]"
-                >
-                  {!claimedTasks.includes(task.id) ? (
-                    <div className="not-done">{task.buttonText}</div>
-                  ) : (
-                    <div className="done">Done</div>
-                  )}
-                </button>
-              </div>
-            );
+          {TaskList.map((task, i) => {
+            return <Task task={task} type="Task" key={i} />;
           })}
         </div>
       </div>
@@ -66,28 +48,8 @@ const Tasks = () => {
           <p className="font-[500] opacity-60">Collaboration</p>
         </div>
         <div className="mt-[5px] w-full rounded-[16px] bg-[#242628] px-[10px] py-[18px] space-y-[20px]">
-          {CollaborationList.map((collab) => {
-            return (
-              <div className="task">
-                <img src={collab.icon} alt="media" />
-                <span>
-                  <h6>{collab.name}</h6>
-                  <p>{collab.points} $REDBIRD</p>
-                </span>
-
-                <button
-                  disabled={claimedTasks.includes(collab.id)}
-                  onClick={() => handleClaimTask(collab.id)}
-                  className="bg-red disabled:bg-[#121314]"
-                >
-                  {!claimedTasks.includes(collab.id) ? (
-                    <div className="not-done">{collab.buttonText}</div>
-                  ) : (
-                    <div className="done">Done</div>
-                  )}
-                </button>
-              </div>
-            );
+          {CollaborationList.map((task, i) => {
+            return <Task task={task} type="Collab" key={i} />;
           })}
         </div>
       </div>

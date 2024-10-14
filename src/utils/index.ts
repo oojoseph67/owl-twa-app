@@ -23,7 +23,7 @@ export function formatNumber(num: number | string): string {
   }
 }
 
-type TaskListType = {
+export type TaskListType = {
   id: string;
   points: number;
   link: string;
@@ -36,7 +36,7 @@ export const TaskList: TaskListType[] = [
   {
     id: "youtube_watch",
     points: 635,
-    link: "https://t.me/apeuniverse_official",
+    link: "https://x.com/RedBirdSolana",
     name: "Watch video on YouTube",
     icon: ytLogo,
     buttonText: "Go",
@@ -44,7 +44,7 @@ export const TaskList: TaskListType[] = [
   {
     id: "tg_join",
     points: 635,
-    link: "https://x.com/ApeUniverse_1",
+    link: "https://t.me/redbirdsolana",
     name: "Join $REDBIRD TG Channel",
     icon: tgLogo,
     buttonText: "Go",
@@ -52,7 +52,7 @@ export const TaskList: TaskListType[] = [
   {
     id: "twitter_follow",
     points: 635,
-    link: "https://www.youtube.com/@ApeUniverse",
+    link: "https://x.com/RedBirdSolana",
     name: "Follow $REDBIRD on Twitter",
     icon: twLogo,
     buttonText: "Go",
@@ -60,7 +60,7 @@ export const TaskList: TaskListType[] = [
   {
     id: "instagram_follow",
     points: 635,
-    link: "https://www.instagram.com/apeuniverse_official",
+    link: "https://x.com/RedBirdSolana",
     name: "Follow $REDBIRD on Instagram",
     icon: igLogo,
     buttonText: "Go",
@@ -71,7 +71,7 @@ export const CollaborationList: TaskListType[] = [
   {
     id: "youtube_watch_collab",
     points: 635,
-    link: "https://t.me/apeuniverse_official",
+    link: "https://t.me/redbirdsolana",
     name: "Play Hamster",
     icon: ytLogo,
     buttonText: "Go",
@@ -79,7 +79,7 @@ export const CollaborationList: TaskListType[] = [
   {
     id: "tg_join_collab",
     points: 635,
-    link: "https://x.com/ApeUniverse_1",
+    link: "https://t.me/redbirdsolana",
     name: "Play Simple Coin",
     icon: tgLogo,
     buttonText: "Join",
@@ -87,7 +87,7 @@ export const CollaborationList: TaskListType[] = [
   {
     id: "twitter_follow_collab",
     points: 635,
-    link: "https://www.youtube.com/@ApeUniverse",
+    link: "https://t.me/redbirdsolana",
     name: "Follow CEX.IO on X",
     icon: twLogo,
     buttonText: "Go",
