@@ -40,7 +40,7 @@ const Task = ({
   }, [loading]);
 
   return (
-    <div className="task">
+    <a href={task.link} target="_blank" className="task">
       <img src={task.icon} alt="media" />
       <span>
         <h6>{task.name}</h6>
@@ -52,16 +52,14 @@ const Task = ({
         className="bg-red disabled:bg-[#121314]"
       >
         {!claimedTasks.includes(task.id) ? (
-          <a href={task.link} target="_blank" className="not-done">
-            {task.buttonText}
-          </a>
+          <div className="not-done">{task.buttonText}</div>
         ) : loading ? (
           <div className="size-[10px] rounded-full border-l border-l-white animate-spin" />
         ) : (
           <div className="done">Done</div>
         )}
       </button>
-    </div>
+    </a>
   );
 };
 
