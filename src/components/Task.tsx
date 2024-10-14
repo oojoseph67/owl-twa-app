@@ -40,16 +40,19 @@ const Task = ({
   }, [loading]);
 
   return (
-    <a href={task.link} target="_blank" className="task">
+    <div className="task">
       <img src={task.icon} alt="media" />
       <span>
         <h6>{task.name}</h6>
         <p>{task.points} $REDBIRD</p>
       </span>
-      <button
-        disabled={claimedTasks.includes(task.id)}
+      <a
+        href={task.link}
+        target="_blank"
         onClick={() => handleClaimTask(task.id)}
-        className="bg-red disabled:bg-[#121314]"
+        className={`${
+          !claimedTasks.includes(task.id) ? "bg-red" : "bg-[#121314]"
+        }`}
       >
         {!claimedTasks.includes(task.id) ? (
           <div className="not-done">{task.buttonText}</div>
@@ -58,8 +61,8 @@ const Task = ({
         ) : (
           <div className="done">Done</div>
         )}
-      </button>
-    </a>
+      </a>
+    </div>
   );
 };
 
