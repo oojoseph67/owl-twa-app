@@ -33,14 +33,14 @@ export type TaskListType = {
 };
 
 export const TaskList: TaskListType[] = [
-  {
-    id: "youtube_watch",
-    points: 635,
-    link: "https://x.com/RedBirdSolana",
-    name: "Watch video on YouTube",
-    icon: ytLogo,
-    buttonText: "Go",
-  },
+  // {
+  //   id: "youtube_watch",
+  //   points: 635,
+  //   link: "https://x.com/RedBirdSolana",
+  //   name: "Watch video on YouTube",
+  //   icon: ytLogo,
+  //   buttonText: "Go",
+  // },
   {
     id: "tg_join",
     points: 635,
@@ -57,14 +57,14 @@ export const TaskList: TaskListType[] = [
     icon: twLogo,
     buttonText: "Go",
   },
-  {
-    id: "instagram_follow",
-    points: 635,
-    link: "https://x.com/RedBirdSolana",
-    name: "Follow $REDBIRD on Instagram",
-    icon: igLogo,
-    buttonText: "Go",
-  },
+  // {
+  //   id: "instagram_follow",
+  //   points: 635,
+  //   link: "https://x.com/RedBirdSolana",
+  //   name: "Follow $REDBIRD on Instagram",
+  //   icon: igLogo,
+  //   buttonText: "Go",
+  // },
 ];
 
 export const CollaborationList: TaskListType[] = [

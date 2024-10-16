@@ -194,10 +194,10 @@ const Home = () => {
             <img className="w-[20px]" src={bird} alt="bird" />
             <div>
               <p className="text-[12px] font-[500] leading-[1.1]">
-                In your Name
+                $REDBIRD in your Name
               </p>
               <p className="text-[10px] opacity-60 leading-[1.1]">
-                Add to your name and <br /> take your 1,000 $REDs
+                Add $REDBIRD to your name and <br /> take your 1,000 $REDs
               </p>
             </div>
           </div>
