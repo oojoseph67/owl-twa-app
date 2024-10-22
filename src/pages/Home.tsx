@@ -3,9 +3,6 @@ import bird from "../assets/bird.png";
 import hand from "../assets/hand.png";
 import tonIcon from "../assets/ton.svg";
 import spin from "../assets/palette.png";
-import leaf from "../assets/leaf icon.png";
-import bot from "../assets/chatbot.png";
-import star from "../assets/glossy star.png";
 import { Link } from "react-router-dom";
 import { useTelegramContext } from "../context/TelegramContext";
 import { useGetUserQuery } from "../modules/query";
@@ -16,6 +13,7 @@ import {
 } from "../modules/mutation";
 import { formatNumber, getFormatAddress } from "../utils";
 import { useIsConnectionRestored, useTonConnectUI } from "@tonconnect/ui-react";
+import RedRewards from "../components/RedRewards";
 
 const Home = () => {
   const addWalletAddressMutation = useAddWalletAddressMutation();
@@ -156,53 +154,7 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="mt-[20px]">
-        <p className="font-[500] opacity-60">Red reward</p>
-
-        <div className="mt-[5px] w-full h-fit bg-[#242628] rounded-[16px] p-[18px] space-y-[10px]">
-          <div className="flex items-center gap-[5px]">
-            <img className="h-[20px]" src={leaf} alt="leaf" />
-            <div>
-              <p className="text-[12px] font-[500] leading-[1.1]">
-                Telegram Age
-              </p>
-              <p className="text-[10px] opacity-60">635 $REDBIRD</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-[5px]">
-            <img className="h-[20px]" src={bot} alt="bot" />
-            <div>
-              <p className="text-[12px] font-[500] leading-[1.1]">
-                Account Activity
-              </p>
-              <p className="text-[10px] opacity-60">635 $REDBIRD</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-[5px]">
-            <img className="h-[20px]" src={star} alt="star" />
-            <div>
-              <p className="text-[12px] font-[500] leading-[1.1]">
-                Telegram Premium
-              </p>
-              <p className="text-[10px] opacity-60">635 $REDBIRD</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-[5px]">
-            <img className="w-[20px]" src={bird} alt="bird" />
-            <div>
-              <p className="text-[12px] font-[500] leading-[1.1]">
-                $REDBIRD in your Name
-              </p>
-              <p className="text-[10px] opacity-60 leading-[1.1]">
-                Add $REDBIRD to your name and <br /> take your 1,000 $REDs
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <RedRewards />
     </div>
   );
 };
