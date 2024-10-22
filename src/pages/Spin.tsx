@@ -63,9 +63,7 @@ const Spin = () => {
   const handlePurchase = async () => {
     if (!spend) return;
 
-    // const rewardId = Math.floor(Math.random() * 4) + 1;
-    const rewardId = Math.floor(Math.random() * 6); //6 items
-    console.log({ rewardId });
+    const rewardId = Math.floor(Math.random() * 6);
 
     purchaseUsingPointsMutation.mutate(
       {
@@ -74,13 +72,11 @@ const Spin = () => {
       },
       {
         onSuccess(data, variables, context) {
-          //Spin Animation
           if (isSpinning) return;
           setIsSpinning(true);
           setRewardEarned(rewardId);
 
           const sectorAngle = rewardId * 60;
-
           const backToZeroDeg = 360 - rewardEarned * 60;
           const baseRotation = 720;
           const finalRotation = baseRotation + sectorAngle + backToZeroDeg;
@@ -93,20 +89,20 @@ const Spin = () => {
           // @ts-ignore
           addSpinResult(spinResult as SpinResultType);
 
-          // @ts-ignore
-          if (spinResult?.outcome > 0) {
-            claimRewardsMutation.mutate({
-              // @ts-ignore
-              points: Number(spinResult?.outcome),
-              userTelegramId: Number(userTelegramId),
-            });
-          }
+          // Delay showing the result until after the animation
+          setTimeout(() => {
+            // @ts-ignore
+            if (spinResult?.outcome > 0) {
+              claimRewardsMutation.mutate({
+                // @ts-ignore
+                points: Number(spinResult?.outcome),
+                userTelegramId: Number(userTelegramId),
+              });
+            }
+            setShowResult(true); // Show the spin result after the spin animation
+          }, 2100); // Adjust this duration if needed
 
           setIsSpinning(false);
-
-          setTimeout(() => {
-            setShowResult(true);
-          }, 2100); //Show the spin result after the spin animation (animation takes 2s)
         },
         onError(error) {
           console.error("Error during bet processing:", error);

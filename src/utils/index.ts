@@ -13,13 +13,31 @@ export function formatNumber(num: number | string): string {
   const absNum = Math.abs(Number(num));
 
   if (absNum >= 1000000000) {
-    return (Number(num) / 1000000000).toFixed(3) + "B";
+    return (
+      (Number(num) / 1000000000).toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 3,
+      }) + "B"
+    );
   } else if (absNum >= 1000000) {
-    return (Number(num) / 1000000).toFixed(3) + "M";
+    return (
+      (Number(num) / 1000000).toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 3,
+      }) + "M"
+    );
   } else if (absNum >= 1000) {
-    return (Number(num) / 1000).toFixed(3) + "K";
+    return (
+      (Number(num) / 1000).toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 3,
+      }) + "K"
+    );
   } else {
-    return Number(num).toFixed(3);
+    return Number(num).toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 3,
+    });
   }
 }
 
