@@ -3,6 +3,7 @@ import Slider from "../components/Slider";
 import RPSResult from "../components/RPS-Result";
 import paperImg from "../assets/paper.png";
 import rockImg from "../assets/rock.png";
+import emptyImg from "../assets/empty.png";
 import scissorsImg from "../assets/scissors.png";
 import useOwlTWAStore, { RPSResult as RPSResultType } from "../utils/store";
 import { useGetUserQuery } from "../modules/query";
@@ -147,7 +148,7 @@ const RockPaperScissors = () => {
             <p className="text-[12px]">Your move</p>
             <p className="text-[10px] opacity-60">
               {selected === null
-                ? "Rock"
+                ? ""
                 : selected === 0
                 ? "Rock"
                 : selected === 1
@@ -155,11 +156,7 @@ const RockPaperScissors = () => {
                 : "Scissors"}
             </p>
             {selected === null && (
-              <img
-                className="rotate-[40deg] w-[46px]"
-                src={rockImg}
-                alt="move"
-              />
+              <img className="mt-[10px] h-[32px]" src={emptyImg} alt="none" />
             )}
             {selected === 0 && (
               <img
@@ -185,7 +182,7 @@ const RockPaperScissors = () => {
           </div>
 
           <div>
-            {false ? (
+            {selected == null && botSelected == null ? (
               <div>
                 <p className="text-[12px] font-[600] text-center leading-[1.0]">
                   Choose a <br /> move
@@ -212,44 +209,42 @@ const RockPaperScissors = () => {
             <p className="text-[10px] opacity-60">
               {" "}
               {botSelected === null
-                ? "Rock"
+                ? ""
                 : botSelected === 0
                 ? "Rock"
                 : botSelected === 1
                 ? "Paper"
                 : "Scissors"}
             </p>
-            {botSelected === null && (
-              <img
-                style={{ transform: "rotateY(180deg) rotate(90deg)" }}
-                className="rotate-[-90deg] h-[46px]"
-                src={rockImg}
-                alt="move"
-              />
-            )}
-            {botSelected === 0 && (
-              <img
-                style={{ transform: "rotateY(180deg) rotate(90deg)" }}
-                className="rotate-[-90deg] h-[46px]"
-                src={rockImg}
-                alt="move"
-              />
-            )}
-            {botSelected === 1 && (
-              <img
-                style={{ transform: "rotateY(180deg) rotate(90deg)" }}
-                className="rotate-[-90deg] h-[46px]"
-                src={paperImg}
-                alt="move"
-              />
-            )}
-            {botSelected === 2 && (
-              <img
-                style={{ transform: "rotateY(180deg) rotate(90deg)" }}
-                className="rotate-[-90deg] h-[46px]"
-                src={scissorsImg}
-                alt="move"
-              />
+            {botSelected === null ? (
+              <img className="mt-[10px] h-[32px]" src={emptyImg} alt="none" />
+            ) : (
+              <div className="size-[46px]">
+                {botSelected === 0 && (
+                  <img
+                    style={{ transform: "rotateY(180deg) rotate(50deg)" }}
+                    className="size-full"
+                    src={rockImg}
+                    alt="move"
+                  />
+                )}
+                {botSelected === 1 && (
+                  <img
+                    style={{ transform: "rotateY(180deg) rotate(20deg)" }}
+                    className="size-full"
+                    src={paperImg}
+                    alt="move"
+                  />
+                )}
+                {botSelected === 2 && (
+                  <img
+                    style={{ transform: "rotate(-90deg)" }}
+                    className="size-full"
+                    src={scissorsImg}
+                    alt="move"
+                  />
+                )}
+              </div>
             )}
           </div>
         </div>

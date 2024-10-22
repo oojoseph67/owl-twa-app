@@ -11,10 +11,7 @@ import Spin from "./pages/Spin";
 
 function App() {
   return (
-    <div
-      className="mini-app relative max-w-[430px] h-screen mx-auto text-white rounded-t-[32px] overflow-hidden"
-      style={{ backgroundColor: "black" }}
-    >
+    <div className="mini-app relative max-w-[430px] h-screen mx-auto text-white rounded-t-[32px] overflow-hidden">
       <div style={{ height: "calc(100vh - 92px)" }} className="font-Inter">
         <Routes>
           <Route path="/" element={<Home />} />
