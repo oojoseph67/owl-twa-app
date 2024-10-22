@@ -33,6 +33,8 @@ export const TelegramProvider: React.FC<{ children: React.ReactNode }> = ({
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
       window.Telegram.WebApp.disableVerticalSwipes();
+      window.Telegram.WebApp.setBackgroundColor("#000000");
+      window.Telegram.WebApp.setHeaderColor("#000000");
 
       if (window.Telegram.WebApp.initDataUnsafe?.user) {
         let startParam =

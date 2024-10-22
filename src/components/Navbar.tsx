@@ -7,11 +7,11 @@ import {
 } from "../assets/CustomIcons";
 
 const Navbar = () => {
-  const loacation = useLocation();
+  const location = useLocation();
   const path = location.pathname;
 
   return (
-    <nav className="absolute bottom-0 h-[92px] w-full flex items-center justify-between px-[30px]">
+    <nav className="fixed bottom-0 h-[92px] w-full flex items-center justify-between px-[30px]">
       <NavLink to="/">
         <div className="h-[24px]">
           <HomeIcon active={path == "/"} />
