@@ -5,11 +5,19 @@ import bird from "../assets/bird.png";
 import { useTelegramContext } from "../context/TelegramContext";
 import { useEffect, useState } from "react";
 import RewardItem from "./RewardItem";
+import { useClaimRewardsMutation } from "../modules/mutation";
+
+const task1Points = 635;
+const task2Points = 635;
+const task3Points = 635;
+const task4Points = 1000;
 
 const RedRewards = () => {
   const tg = window.Telegram;
-  const { firstName } = useTelegramContext();
+  const { firstName, userTelegramId } = useTelegramContext();
   const isPremium = tg.WebApp.initDataUnsafe?.user?.is_premium;
+
+  const claimRewardsMutation = useClaimRewardsMutation();
 
   const getStoredTaskState = (key: string) => {
     const storedValue = localStorage.getItem(key);
@@ -65,6 +73,45 @@ const RedRewards = () => {
     saveToLocalStorage("task3", task3);
     saveToLocalStorage("task4", task4);
   }, [task1, task2, task3, task4]);
+
+  useEffect(() => {
+    const hasClaimedTask1 = localStorage.getItem("hasClaimedTask1") === "true";
+    const hasClaimedTask2 = localStorage.getItem("hasClaimedTask2") === "true";
+    const hasClaimedTask3 = localStorage.getItem("hasClaimedTask3") === "true";
+    const hasClaimedTask4 = localStorage.getItem("hasClaimedTask4") === "true";
+
+    if (task1 && !hasClaimedTask1) {
+      claimRewardsMutation.mutate({
+        points: task1Points,
+        userTelegramId: Number(userTelegramId),
+      });
+      localStorage.setItem("hasClaimedTask1", "true");
+    }
+
+    if (task2 && !hasClaimedTask2) {
+      claimRewardsMutation.mutate({
+        points: task2Points,
+        userTelegramId: Number(userTelegramId),
+      });
+      localStorage.setItem("hasClaimedTask2", "true");
+    }
+
+    if (task3 && !hasClaimedTask3) {
+      claimRewardsMutation.mutate({
+        points: task3Points,
+        userTelegramId: Number(userTelegramId),
+      });
+      localStorage.setItem("hasClaimedTask3", "true");
+    }
+
+    if (task4 && !hasClaimedTask4) {
+      claimRewardsMutation.mutate({
+        points: task4Points,
+        userTelegramId: Number(userTelegramId),
+      });
+      localStorage.setItem("hasClaimedTask4", "true");
+    }
+  }, [task1, task2, task3, task4, userTelegramId]);
 
   return (
     <div className="mt-[20px]">

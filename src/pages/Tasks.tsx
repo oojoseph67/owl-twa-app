@@ -2,12 +2,8 @@ import { useEffect } from "react";
 import bird from "../assets/bird.png";
 import Task from "../components/Task";
 import { CollaborationList, TaskList } from "../utils";
-import useOwlTWAStore from "../utils/store";
 
 const Tasks = () => {
-  const { claimedTasks, collaborationTasks, claimTask, collaborationTask } =
-    useOwlTWAStore();
-
   //Show Back Button
   useEffect(() => {
     const tg = window.Telegram.WebApp;
@@ -23,17 +19,6 @@ const Tasks = () => {
     };
   }, []);
 
-  const handleClaimTask = (taskId: string) => {
-    if (!claimedTasks.includes(taskId)) {
-      claimTask(taskId);
-    }
-  };
-
-  const handleCollaborationTask = (taskId: string) => {
-    if (!collaborationTasks.includes(taskId)) {
-      collaborationTask(taskId);
-    }
-  };
 
   return (
     <div className="tasks h-full w-full relative overflow-y-auto overflow-x-hidden px-[19px] py-[20px]">

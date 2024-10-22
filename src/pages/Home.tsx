@@ -18,7 +18,8 @@ import RedRewards from "../components/RedRewards";
 const Home = () => {
   const addWalletAddressMutation = useAddWalletAddressMutation();
   const registerUserMutation = useRegisterUserMutation();
-  const { userTelegramId, userPhoto, firstName } = useTelegramContext();
+  const { userTelegramId, userPhoto, firstName, referralCode } =
+    useTelegramContext();
 
   const { data: userQueryData } = useGetUserQuery({
     userTelegramId,
@@ -45,13 +46,10 @@ const Home = () => {
   useEffect(() => {
     if (userQueryData) {
       if (userQueryData.status === 404 || !userQueryData) {
-        const searchParams = new URLSearchParams(location.search);
-        const refCode = searchParams.get("startapp");
-
         registerUserMutation.mutate({
-          username: firstName || "Joseph",
+          username: firstName,
           userTelegramId: Number(userTelegramId),
-          refTelegramId: Number(refCode),
+          refTelegramId: Number(referralCode),
           profilePicture: userPhoto!,
         });
       } else {
