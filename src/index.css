@@ -77,6 +77,14 @@
   }
 }
 
+.mini-app {
+  background: linear-gradient(
+    180deg,
+    rgba(57, 52, 52, 0.25),
+    rgba(57, 52, 52, 0)
+  );
+}
+
 .dots div:nth-child(1) {
   animation: fade 1s linear infinite 2s;
 }
