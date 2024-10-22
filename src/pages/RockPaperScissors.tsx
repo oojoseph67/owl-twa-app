@@ -18,6 +18,21 @@ const MIN_SPEND = 100;
 const RockPaperScissors = () => {
   const { userTelegramId } = useTelegramContext();
 
+  //Show Back Button
+  useEffect(() => {
+    const tg = window.Telegram.WebApp;
+
+    tg.BackButton.show();
+
+    tg.BackButton.onClick(() => {
+      window.history.back();
+    });
+
+    return () => {
+      tg.BackButton.hide();
+    };
+  }, []);
+
   const purchaseUsingPointsMutation = usePurchaseUsingPointsMutation();
   const claimRewardsMutation = useClaimRewardsMutation();
   const { data: userQueryData } = useGetUserQuery({

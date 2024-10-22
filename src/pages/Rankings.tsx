@@ -1,8 +1,24 @@
+import { useEffect } from "react";
 import Rank from "../components/Rank";
 import { useTelegramContext } from "../context/TelegramContext";
 import { useGetLeaderboardQuery, UserInterface } from "../modules/query";
 
 const Rankings = () => {
+  //Show Back Button
+  useEffect(() => {
+    const tg = window.Telegram.WebApp;
+
+    tg.BackButton.show();
+
+    tg.BackButton.onClick(() => {
+      window.history.back();
+    });
+
+    return () => {
+      tg.BackButton.hide();
+    };
+  }, []);
+
   const { userTelegramId } = useTelegramContext();
   const { data: leaderboardData } = useGetLeaderboardQuery();
   // const data = useGetLeaderboardQuery();

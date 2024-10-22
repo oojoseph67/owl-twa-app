@@ -14,6 +14,21 @@ import { formatNumber } from "../utils";
 const MIN_SPEND = 100;
 
 const HeadorTail = () => {
+  //Show Back Button
+  useEffect(() => {
+    const tg = window.Telegram.WebApp;
+
+    tg.BackButton.show();
+
+    tg.BackButton.onClick(() => {
+      window.history.back();
+    });
+
+    return () => {
+      tg.BackButton.hide();
+    };
+  }, []);
+
   const { userTelegramId } = useTelegramContext();
 
   const purchaseUsingPointsMutation = usePurchaseUsingPointsMutation();

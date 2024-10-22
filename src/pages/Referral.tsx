@@ -6,6 +6,21 @@ import { useEffect, useState } from "react";
 import { useTelegramContext } from "../context/TelegramContext";
 
 const Referral = () => {
+  //Show Back Button
+  useEffect(() => {
+    const tg = window.Telegram.WebApp;
+
+    tg.BackButton.show();
+
+    tg.BackButton.onClick(() => {
+      window.history.back();
+    });
+
+    return () => {
+      tg.BackButton.hide();
+    };
+  }, []);
+
   const { userTelegramId } = useTelegramContext();
   const [copied, setCopied] = useState(false);
   const [inviteLink, setInviteLink] = useState<string | null>(null);
@@ -13,10 +28,9 @@ const Referral = () => {
 
   useEffect(() => {
     if (userTelegramId) {
-      const baseUrl = window.location.origin;
-      setInviteLink(
-        `${baseUrl}?startapp=${userTelegramId}`
-      );
+      // const baseUrl = window.location.origin;
+      const baseUrl = "https://t.me/redbirdsol_bot/RedBird";
+      setInviteLink(`${baseUrl}?startapp=${userTelegramId}`);
     }
   }, [userTelegramId]);
 
