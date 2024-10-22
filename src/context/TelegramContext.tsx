@@ -14,6 +14,7 @@ interface TelegramContextType {
   setFirstName: React.Dispatch<React.SetStateAction<string>>;
   handleClose: () => void;
   userTelegramId: string;
+  referralCode: string | null;
 }
 
 // Create the Telegram context
@@ -27,6 +28,7 @@ export const TelegramProvider: React.FC<{ children: React.ReactNode }> = ({
   const [firstName, setFirstName] = useState<string>("Mate");
   const [userTelegramId, setUserTelegramId] = useState<string>("");
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
 
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp) {
@@ -35,6 +37,13 @@ export const TelegramProvider: React.FC<{ children: React.ReactNode }> = ({
       window.Telegram.WebApp.disableVerticalSwipes();
       window.Telegram.WebApp.setBackgroundColor("#000000");
       window.Telegram.WebApp.setHeaderColor("#000000");
+
+      const referralCode =
+        window.Telegram.WebApp.initDataUnsafe.start_param || "";
+      if (referralCode) {
+        console.log(referralCode);
+        setReferralCode(referralCode);
+      }
 
       if (window.Telegram.WebApp.initDataUnsafe?.user) {
         let startParam =
@@ -93,6 +102,7 @@ export const TelegramProvider: React.FC<{ children: React.ReactNode }> = ({
         userTelegramId: userTelegramId
           ? userTelegramId
           : customUserTelegramId.toString(),
+        referralCode,
       }}
     >
       {children}
