@@ -29,16 +29,16 @@ const RedRewards = () => {
   };
 
   const [task1, setTask1] = useState<boolean>(() =>
-    getStoredTaskState("task1")
+    getStoredTaskState("task1v")
   );
   const [task2, setTask2] = useState<boolean>(() =>
-    getStoredTaskState("task2")
+    getStoredTaskState("task2v")
   );
   const [task3, setTask3] = useState<boolean>(() =>
-    getStoredTaskState("task3")
+    getStoredTaskState("task3v")
   );
   const [task4, setTask4] = useState<boolean>(() =>
-    getStoredTaskState("task4")
+    getStoredTaskState("task4v")
   );
 
   const checkTask1 = () => setTask1(true);
@@ -68,24 +68,24 @@ const RedRewards = () => {
   };
 
   useEffect(() => {
-    saveToLocalStorage("task1", task1);
-    saveToLocalStorage("task2", task2);
-    saveToLocalStorage("task3", task3);
-    saveToLocalStorage("task4", task4);
+    saveToLocalStorage("task1v", task1);
+    saveToLocalStorage("task2v", task2);
+    saveToLocalStorage("task3v", task3);
+    saveToLocalStorage("task4v", task4);
   }, [task1, task2, task3, task4]);
 
   useEffect(() => {
-    const hasClaimedTask1 = localStorage.getItem("hasClaimedTask1") === "true";
-    const hasClaimedTask2 = localStorage.getItem("hasClaimedTask2") === "true";
-    const hasClaimedTask3 = localStorage.getItem("hasClaimedTask3") === "true";
-    const hasClaimedTask4 = localStorage.getItem("hasClaimedTask4") === "true";
+    const hasClaimedTask1 = localStorage.getItem("hasClaimedTask1v") === "true";
+    const hasClaimedTask2 = localStorage.getItem("hasClaimedTask2v") === "true";
+    const hasClaimedTask3 = localStorage.getItem("hasClaimedTask3v") === "true";
+    const hasClaimedTask4 = localStorage.getItem("hasClaimedTask4v") === "true";
 
     if (task1 && !hasClaimedTask1) {
       claimRewardsMutation.mutate({
         points: task1Points,
         userTelegramId: Number(userTelegramId),
       });
-      localStorage.setItem("hasClaimedTask1", "true");
+      localStorage.setItem("hasClaimedTask1v", "true");
     }
 
     if (task2 && !hasClaimedTask2) {
@@ -93,7 +93,7 @@ const RedRewards = () => {
         points: task2Points,
         userTelegramId: Number(userTelegramId),
       });
-      localStorage.setItem("hasClaimedTask2", "true");
+      localStorage.setItem("hasClaimedTask2v", "true");
     }
 
     if (task3 && !hasClaimedTask3) {
@@ -101,7 +101,7 @@ const RedRewards = () => {
         points: task3Points,
         userTelegramId: Number(userTelegramId),
       });
-      localStorage.setItem("hasClaimedTask3", "true");
+      localStorage.setItem("hasClaimedTask3v", "true");
     }
 
     if (task4 && !hasClaimedTask4) {
@@ -109,7 +109,7 @@ const RedRewards = () => {
         points: task4Points,
         userTelegramId: Number(userTelegramId),
       });
-      localStorage.setItem("hasClaimedTask4", "true");
+      localStorage.setItem("hasClaimedTask4v", "true");
     }
   }, [task1, task2, task3, task4, userTelegramId]);
 

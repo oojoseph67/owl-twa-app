@@ -90,9 +90,9 @@ const loadState = () => {
   const hotResults = JSON.parse(localStorage.getItem("hotResults") || "[]");
   const rpsResults = JSON.parse(localStorage.getItem("rpsResultsV3") || "[]");
   const spinResults = JSON.parse(localStorage.getItem("spinResults") || "[]");
-  const claimedTasks = JSON.parse(localStorage.getItem("claimedTasks") || "[]");
+  const claimedTasks = JSON.parse(localStorage.getItem("claimedTasksV2") || "[]");
   const collaborationTasks = JSON.parse(
-    localStorage.getItem("claimedTasks") || "[]"
+    localStorage.getItem("collaborationTasksV2") || "[]"
   );
 
   return {
@@ -124,9 +124,9 @@ const saveState = ({
   localStorage.setItem("hotResults", JSON.stringify(hotResults));
   localStorage.setItem("rpsResultsV3", JSON.stringify(rpsResults));
   localStorage.setItem("spinResults", JSON.stringify(spinResults));
-  localStorage.setItem("claimedTasks", JSON.stringify(claimedTasks));
+  localStorage.setItem("claimedTasksV2", JSON.stringify(claimedTasks));
   localStorage.setItem(
-    "collaborationTasks",
+    "collaborationTasksV2",
     JSON.stringify(collaborationTasks)
   );
 };

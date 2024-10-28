@@ -21,20 +21,41 @@ const Task = ({
   const handleClaimTask = () => {
     if (type === "Task") {
       if (!claimedTasks.includes(task.id)) {
+        console.log("inside if");
         claimTask(task.id);
-        claimRewardsMutation.mutate({
-          points: task.points,
-          userTelegramId: Number(userTelegramId),
-        });
+        claimRewardsMutation.mutate(
+          {
+            points: task.points,
+            userTelegramId: Number(userTelegramId),
+          },
+          {
+            onError: () => {
+              console.log("error");
+            },
+            onSuccess: () => {
+              console.log("success");
+            },
+          }
+        );
         setLoading(true);
       }
     } else if (type === "Collab") {
       if (!collaborationTasks.includes(task.id)) {
         collaborationTask(task.id);
-        claimRewardsMutation.mutate({
-          points: task.points,
-          userTelegramId: Number(userTelegramId),
-        });
+        claimRewardsMutation.mutate(
+          {
+            points: task.points,
+            userTelegramId: Number(userTelegramId),
+          },
+          {
+            onError: () => {
+              console.log("error");
+            },
+            onSuccess: () => {
+              console.log("success");
+            },
+          }
+        );
         setLoading(true);
       }
     }
