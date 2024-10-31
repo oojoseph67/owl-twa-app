@@ -47,6 +47,8 @@ const HeadorTail = () => {
   const [result, setResult] = useState<Result | null>();
   const [displayWining, setDisplayWining] = useState(false);
 
+  const canPlay = userPoints && userPoints >= MIN_SPEND;
+
   const handleBet = () => {
     if (!selectedBet || !spend) return;
 
@@ -134,10 +136,14 @@ const HeadorTail = () => {
                 className="mt-[10px] w-full h-[43px] bg-red rounded-[8px] font-[600]"
                 onClick={handleBet}
                 disabled={
-                  spend > userPoints || !selectedBet || !spend || !userPoints
+                  spend > userPoints ||
+                  !selectedBet ||
+                  !spend ||
+                  !userPoints ||
+                  !canPlay
                 }
               >
-                {"Head or Tail"}
+                {canPlay ? "Head or Tail" : "Insufficient Balance"}
               </button>
             </>
           ) : (

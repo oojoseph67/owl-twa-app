@@ -41,6 +41,8 @@ const Spin = () => {
   const { userData } = userQueryData || {};
   const { points: userPoints } = userData || {};
 
+  const canPlay = userPoints && userPoints >= MIN_SPEND;
+
   const [spend, setSpend] = useState<number>(MIN_SPEND);
 
   const {
@@ -51,8 +53,6 @@ const Spin = () => {
     setCurrentSpinResult,
   } = useOwlTWAStore();
   const reversedResults = spinResults.slice().reverse().slice(0, 20);
-
-  console.log({ spinResults });
 
   const [rotation, setRotation] = useState<number>(0);
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
@@ -173,10 +173,10 @@ const Spin = () => {
               />
               <button
                 onClick={handlePurchase}
-                disabled={purchaseUsingPointsMutation.isLoading}
+                disabled={purchaseUsingPointsMutation.isLoading || !canPlay}
                 className="mt-[20px] w-full h-[43px] bg-red rounded-[8px] font-[600]"
               >
-                Spin
+                {canPlay ? "Spin" : "Insufficient Balance"}
               </button>
             </div>
           ) : (
