@@ -1,14 +1,13 @@
 const TelegramBot = require("node-telegram-bot-api");
 require("dotenv").config();
 
-//Bot access token
-const TOKEN = "7753299281:AAHf_0JWrCpPzwaZ6dRgFxzFBoXp3rNxiNI";
+// Bot access token
+const TOKEN = "7747269901:AAGIXpydT9wMd8zCcPpxpBUSWG8LiubRd3Y";
 
 const bot = new TelegramBot(TOKEN, { polling: true });
 
-const webAppUrl = "https://www.devbasit.xyz/";
-const twitterUrl = "https://x.com/Basit_js";
-const telegramUrl = "https://t.me/CodeBender";
+const webAppUrl = "https://red-tma.vercel.app/";
+const telegramUrl = "https://t.me/redbirdsolana";
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
@@ -18,19 +17,14 @@ bot.onText(/\/start/, (msg) => {
       inline_keyboard: [
         [
           {
-            text: "🚀 Visit Portfolio Website", // Web app button
+            text: "Play Game 🎮🚀", // Web app button
             web_app: { url: webAppUrl },
           },
         ],
+
         [
           {
-            text: "🐦 Twitter Profile", // Twitter button
-            url: twitterUrl,
-          },
-        ],
-        [
-          {
-            text: "🌐 Telegram Profile", // Telegram button
+            text: "Join Community 🌐", // Telegram button
             url: telegramUrl,
           },
         ],
@@ -41,7 +35,9 @@ bot.onText(/\/start/, (msg) => {
   // Send the message with the button to open the web app
   bot.sendMessage(
     chatId,
-    `Hi ${msg.from.first_name || "mate"}👋, Click the buttons below to visit:`,
+    `Hello ${
+      msg.from.first_name || "mate"
+    },\n\n🐤 Start collecting #REDBIRD and stack them up for epic airdrops and rewards✨`,
     opts
   );
 });
@@ -52,6 +48,6 @@ bot.on("message", (msg) => {
 
   // If the user sends a message other than /start
   if (msg.text !== "/start") {
-    bot.sendMessage(chatId, "Send /start to see the web app button.");
+    bot.sendMessage(chatId, "Send /start to interact.");
   }
 });
