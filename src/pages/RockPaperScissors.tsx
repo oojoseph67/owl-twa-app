@@ -43,6 +43,8 @@ const RockPaperScissors = () => {
   const { userData } = userQueryData || {};
   const { points: userPoints } = userData || {};
 
+  const canPlay = userPoints && userPoints >= MIN_SPEND;
+
   const [spend, setSpend] = useState<number>(MIN_SPEND);
   const [selected, setSelected] = useState<number | null>(null);
   const [botSelected, setBotSelected] = useState<number | null>(null);
@@ -305,10 +307,13 @@ const RockPaperScissors = () => {
                   selected == null ? "bg-[#534949]" : "bg-red"
                 } mt-[10px] w-full h-[43px] rounded-[8px] font-[600]`}
                 onClick={handleMove}
+                disabled={!canPlay}
               >
-                {selected == null
-                  ? "Select Move"
-                  : `Go (Round ${gameCount + 1}/3)`}
+                {canPlay
+                  ? selected == null
+                    ? "Select Move"
+                    : `Go (Round ${gameCount + 1}/3)`
+                  : "Insufficient Balance"}
               </button>
             </>
           ) : (
